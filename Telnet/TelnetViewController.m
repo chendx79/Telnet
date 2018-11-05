@@ -8,6 +8,7 @@
 
 #import "TelnetViewController.h"
 #import "TelnetClient.h"
+#import "AnsiEscapeHelper.h"
 
 @interface TelnetViewController () <TelnetDelegate, UITextViewDelegate, UIScrollViewDelegate>
 @property TelnetClient *client;
@@ -89,7 +90,16 @@
 {
     __weak TelnetViewController *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf.consoleView insertText:msg];
+        //处理AnsiEscapeString
+        ANSIEscapeHelper *ansiEscapeHelper = [[ANSIEscapeHelper alloc] init];
+        NSMutableAttributedString *fullTextAttributed = [[NSMutableAttributedString alloc] initWithAttributedString:weakSelf.consoleView.attributedText];
+        NSAttributedString *attrStr = [ansiEscapeHelper attributedStringWithANSIEscapedString:msg];
+        [fullTextAttributed appendAttributedString:attrStr];
+
+        weakSelf.consoleView.attributedText = fullTextAttributed;
+        //
+
+        //[weakSelf.consoleView insertText:msg];
         [weakSelf.consoleView setNeedsDisplay];
         
         NSRange visibleRange = NSMakeRange(weakSelf.consoleView.text.length-2, 1);
