@@ -210,7 +210,7 @@ static void _event_handler(telnet_t *telnet, telnet_event_t *ev,
                 
             default:
                 break;
-        }
+        } 
     } else if (aStream == self.inputStream) {
         switch (eventCode) {
             case NSStreamEventHasBytesAvailable:

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		65E356DA21901E7F004369FB /* libtelnet.c in Sources */ = {isa = PBXBuildFile; fileRef = 65E356D921901E7F004369FB /* libtelnet.c */; };
 		9362F3C41E14F67100842C29 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3C31E14F67100842C29 /* main.m */; };
 		9362F3C71E14F67100842C29 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3C61E14F67100842C29 /* AppDelegate.m */; };
 		9362F3CD1E14F67100842C29 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9362F3CB1E14F67100842C29 /* Main.storyboard */; };
@@ -17,10 +18,10 @@
 		9362F3E31E14F6D400842C29 /* TelnetClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3E21E14F6D400842C29 /* TelnetClient.m */; };
 		9362F3EB1E14F75700842C29 /* HostsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3EA1E14F75700842C29 /* HostsDataSource.m */; };
 		E753D2931E1B54F30096FBD7 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = E753D2921E1B54F30096FBD7 /* README.md */; };
-		E753D2951E1B5AA20096FBD7 /* libtelnet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E753D2941E1B5AA20096FBD7 /* libtelnet.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		65E356D921901E7F004369FB /* libtelnet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = libtelnet.c; sourceTree = "<group>"; };
 		9362F3BF1E14F67100842C29 /* Telnet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Telnet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9362F3C31E14F67100842C29 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9362F3C51E14F67100842C29 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -39,7 +40,6 @@
 		9362F3E91E14F75700842C29 /* HostsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HostsDataSource.h; sourceTree = "<group>"; };
 		9362F3EA1E14F75700842C29 /* HostsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HostsDataSource.m; sourceTree = "<group>"; };
 		E753D2921E1B54F30096FBD7 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		E753D2941E1B5AA20096FBD7 /* libtelnet.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtelnet.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,7 +47,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E753D2951E1B5AA20096FBD7 /* libtelnet.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,7 +119,7 @@
 		9362F3E41E14F6FA00842C29 /* libtelnet */ = {
 			isa = PBXGroup;
 			children = (
-				E753D2941E1B5AA20096FBD7 /* libtelnet.a */,
+				65E356D921901E7F004369FB /* libtelnet.c */,
 				9362F3E61E14F6FA00842C29 /* libtelnet.h */,
 			);
 			path = libtelnet;
@@ -213,6 +212,7 @@
 				9362F3DD1E14F69400842C29 /* TelnetHostsViewController.m in Sources */,
 				9362F3C41E14F67100842C29 /* main.m in Sources */,
 				9362F3EB1E14F75700842C29 /* HostsDataSource.m in Sources */,
+				65E356DA21901E7F004369FB /* libtelnet.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

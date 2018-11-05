@@ -117,8 +117,6 @@
 {
     NSLog(@"%s", __func__);
     
-    CGRect oriBound = self.consoleView.bounds;
-    CGPoint consoleOriPoint = self.consoleView.frame.origin;
     [self.consoleView setBounds:self.view.bounds];
     [self.consoleView setCenter:self.view.center];
 }
