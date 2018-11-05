@@ -36,7 +36,11 @@ static void _send(id client, const char *buffer, size_t size) {
     myObjCSelectorPointer(client, @selector(flushData:), data);
 }
 static void _display(id telnetDelegate, const char *buffer, size_t size) {
-    NSString *msg = [NSString stringWithFormat:@"%.*s", (int)size, buffer];
+    //中文编码转换
+    NSData* data = [NSData dataWithBytes:buffer length:size];
+    NSStringEncoding gbkEncoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
+    NSString *msg = [[NSString alloc] initWithData:data encoding:gbkEncoding];
+    
     SEL sel = @selector(didReceiveMessage:);
     void (*myObjCSelectorPointer)(id, SEL, NSString *)  = (void (*)(id,SEL,NSString *))[telnetDelegate methodForSelector:sel];
     myObjCSelectorPointer(telnetDelegate, sel, msg);

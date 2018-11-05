@@ -49,7 +49,7 @@
     NSArray *temp = [localPref objectForKey:[self identifier]];
     
     if (!temp) {
-        temp = @[@{TELNET_KEYS_HOST:@"192.168.88.123"}];
+        temp = @[@{TELNET_KEYS_HOST:@"mud.pkuxkx.com"}];
     }
     NSMutableArray *propertyArray = [[NSMutableArray alloc] init];
     for(NSDictionary *dict in temp) {
@@ -60,7 +60,7 @@
         prop.password = [dict valueForKey:TELNET_KEYS_PWD];
         
         if (!prop.port) {
-            prop.port = @"23";
+            prop.port = @"8080";
         }
         
         [propertyArray addObject:prop];
