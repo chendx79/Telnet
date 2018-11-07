@@ -20,6 +20,9 @@
 @property (strong, nonatomic) NSOutputStream *outputStream;
 
 @end
+
+NSMutableData *recBuf;
+
 @implementation TelnetClient
 
 static const telnet_telopt_t telopts[] = {
@@ -37,10 +40,25 @@ static void _send(id client, const char *buffer, size_t size) {
 }
 static void _display(id telnetDelegate, const char *buffer, size_t size) {
     //中文编码转换
-    NSData* data = [NSData dataWithBytes:buffer length:size];
     NSStringEncoding gbkEncoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
-    NSString *msg = [[NSString alloc] initWithData:data encoding:gbkEncoding];
-    
+    NSData* data = [NSData dataWithBytes:buffer length:size];
+    if (recBuf == nil) {
+        recBuf = [[NSMutableData alloc] initWithData:data];
+    }
+    else{
+        [recBuf appendData:data];
+    }
+    NSString *msg = [[NSString alloc] initWithData:recBuf encoding:gbkEncoding];
+    if (msg == nil)
+    {
+        return;
+    }
+    else
+    {
+        [recBuf resetBytesInRange:NSMakeRange(0, recBuf.length)];
+        [recBuf setLength:0];
+    }
+
     SEL sel = @selector(didReceiveMessage:);
     void (*myObjCSelectorPointer)(id, SEL, NSString *)  = (void (*)(id,SEL,NSString *))[telnetDelegate methodForSelector:sel];
     myObjCSelectorPointer(telnetDelegate, sel, msg);
@@ -67,7 +85,7 @@ static void _event_handler(telnet_t *telnet, telnet_event_t *ev,
     switch (ev->type) {
             /* data received */
         case TELNET_EV_DATA:
-            printf("data：%.*s", (int)ev->data.size, ev->data.buffer);
+            //printf("data：%.*s", (int)ev->data.size, ev->data.buffer);
             _display(telnetDelegate, ev->data.buffer, ev->data.size);
             break;
             /* data must be sent */

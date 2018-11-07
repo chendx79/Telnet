@@ -10,6 +10,23 @@
 #import "TelnetClient.h"
 #import "AnsiEscapeHelper.h"
 
+#define kANSIColorPrefKey_FgBlack    @"ansiColorsFgBlack"
+#define kANSIColorPrefKey_FgWhite    @"ansiColorsFgWhite"
+#define kANSIColorPrefKey_FgRed        @"ansiColorsFgRed"
+#define kANSIColorPrefKey_FgGreen    @"ansiColorsFgGreen"
+#define kANSIColorPrefKey_FgYellow    @"ansiColorsFgYellow"
+#define kANSIColorPrefKey_FgBlue    @"ansiColorsFgBlue"
+#define kANSIColorPrefKey_FgMagenta    @"ansiColorsFgMagenta"
+#define kANSIColorPrefKey_FgCyan    @"ansiColorsFgCyan"
+#define kANSIColorPrefKey_BgBlack    @"ansiColorsBgBlack"
+#define kANSIColorPrefKey_BgWhite    @"ansiColorsBgWhite"
+#define kANSIColorPrefKey_BgRed        @"ansiColorsBgRed"
+#define kANSIColorPrefKey_BgGreen    @"ansiColorsBgGreen"
+#define kANSIColorPrefKey_BgYellow    @"ansiColorsBgYellow"
+#define kANSIColorPrefKey_BgBlue    @"ansiColorsBgBlue"
+#define kANSIColorPrefKey_BgMagenta    @"ansiColorsBgMagenta"
+#define kANSIColorPrefKey_BgCyan    @"ansiColorsBgCyan"
+
 @interface TelnetViewController () <TelnetDelegate, UITextViewDelegate, UIScrollViewDelegate>
 @property TelnetClient *client;
 @property BOOL doEcho;
@@ -88,12 +105,49 @@
 
 - (void)appendText:(NSString *)msg
 {
+    if (msg == nil)
+        return;
     __weak TelnetViewController *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         //处理AnsiEscapeString
         ANSIEscapeHelper *ansiEscapeHelper = [[ANSIEscapeHelper alloc] init];
+        // set colors & font to use to ansiEscapeHelper
+        NSDictionary *colorPrefDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
+                                           [NSNumber numberWithInt:SGRCodeFgBlack], kANSIColorPrefKey_FgBlack,
+                                           [NSNumber numberWithInt:SGRCodeFgWhite], kANSIColorPrefKey_FgWhite,
+                                           [NSNumber numberWithInt:SGRCodeFgRed], kANSIColorPrefKey_FgRed,
+                                           [NSNumber numberWithInt:SGRCodeFgGreen], kANSIColorPrefKey_FgGreen,
+                                           [NSNumber numberWithInt:SGRCodeFgYellow], kANSIColorPrefKey_FgYellow,
+                                           [NSNumber numberWithInt:SGRCodeFgBlue], kANSIColorPrefKey_FgBlue,
+                                           [NSNumber numberWithInt:SGRCodeFgMagenta], kANSIColorPrefKey_FgMagenta,
+                                           [NSNumber numberWithInt:SGRCodeFgCyan], kANSIColorPrefKey_FgCyan,
+                                           [NSNumber numberWithInt:SGRCodeBgBlack], kANSIColorPrefKey_BgBlack,
+                                           [NSNumber numberWithInt:SGRCodeBgWhite], kANSIColorPrefKey_BgWhite,
+                                           [NSNumber numberWithInt:SGRCodeBgRed], kANSIColorPrefKey_BgRed,
+                                           [NSNumber numberWithInt:SGRCodeBgGreen], kANSIColorPrefKey_BgGreen,
+                                           [NSNumber numberWithInt:SGRCodeBgYellow], kANSIColorPrefKey_BgYellow,
+                                           [NSNumber numberWithInt:SGRCodeBgBlue], kANSIColorPrefKey_BgBlue,
+                                           [NSNumber numberWithInt:SGRCodeBgMagenta], kANSIColorPrefKey_BgMagenta,
+                                           [NSNumber numberWithInt:SGRCodeBgCyan], kANSIColorPrefKey_BgCyan,
+                                           nil];
+        NSUInteger iColorPrefDefaultsKey;
+        NSData *colorData;
+        NSString *thisPrefName;
+        for (iColorPrefDefaultsKey = 0; iColorPrefDefaultsKey < [[colorPrefDefaults allKeys] count]; iColorPrefDefaultsKey++)
+        {
+            thisPrefName = [[colorPrefDefaults allKeys] objectAtIndex:iColorPrefDefaultsKey];
+            colorData = [[NSUserDefaults standardUserDefaults] dataForKey:thisPrefName];
+            if (colorData != nil)
+            {
+                UIColor *thisColor = (UIColor *)[NSKeyedUnarchiver unarchiveObjectWithData:colorData];
+                [[ansiEscapeHelper ansiColors] setObject:thisColor forKey:[colorPrefDefaults objectForKey:thisPrefName]];
+            }
+        }
+        [ansiEscapeHelper setFont:[self.consoleView font]];
+
         NSMutableAttributedString *fullTextAttributed = [[NSMutableAttributedString alloc] initWithAttributedString:weakSelf.consoleView.attributedText];
         NSAttributedString *attrStr = [ansiEscapeHelper attributedStringWithANSIEscapedString:msg];
+        //NSAttributedString *attrStr = [ansiEscapeHelper attributedStringWithANSIEscapedString:@"\x1b[32mgreen\x1b[0m"];
         [fullTextAttributed appendAttributedString:attrStr];
 
         weakSelf.consoleView.attributedText = fullTextAttributed;
@@ -135,6 +189,7 @@
 
 - (void)didReceiveMessage:(NSString *)msg
 {
+    NSLog(@"Got %lu string [%@]", [msg length], msg);
     [self appendText:msg];
 }
 

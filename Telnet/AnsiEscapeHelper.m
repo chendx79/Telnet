@@ -28,7 +28,36 @@
  */
 
 #import "ANSIEscapeHelper.h"
-#import <CoreText/CoreText.h>
+//#import <CoreText/CoreText.h>
+
+// the CSI (Control Sequence Initiator) -- i.e. "escape sequence prefix".
+// (add your own CSI:Miami joke here)
+#define kANSIEscapeCSI          @"\033["
+
+// the end byte of an SGR (Select Graphic Rendition)
+// ANSI Escape Sequence
+#define kANSIEscapeSGREnd       @"m"
+
+
+// color definition helper macros
+#define kBrightColorBrightness  1.0
+#define kBrightColorSaturation  0.4
+#define kBrightColorAlpha       1.0
+
+#define kDefaultANSIColorBgBrightBlack      kDefaultANSIColorFgBrightBlack
+#define kDefaultANSIColorBgBrightRed        kDefaultANSIColorFgBrightRed
+#define kDefaultANSIColorBgBrightGreen      kDefaultANSIColorFgBrightGreen
+#define kDefaultANSIColorBgBrightYellow     kDefaultANSIColorFgBrightYellow
+#define kDefaultANSIColorBgBrightBlue       kDefaultANSIColorFgBrightBlue
+#define kDefaultANSIColorBgBrightMagenta    kDefaultANSIColorFgBrightMagenta
+#define kDefaultANSIColorBgBrightCyan       kDefaultANSIColorFgBrightCyan
+#define kDefaultANSIColorBgBrightWhite      kDefaultANSIColorFgBrightWhite
+
+#define kDefaultFontSize [NSFont systemFontSize]
+#define kDefaultForegroundColor UIColor.blackColor
+
+// minimum weight for an NSFont for it to be considered bold
+#define kBoldFontMinWeight          9
 
 @implementation ANSIEscapeHelper
 
@@ -59,172 +88,197 @@
 
 - (NSAttributedString*) attributedStringWithANSIEscapedString:(NSString*)aString
 {
-	if (aString == nil)
-		return nil;
-    
-	NSString *cleanString;
-	NSArray *attributesAndRanges = [self attributesForString:aString cleanString:&cleanString];
-	NSMutableAttributedString *attributedString = [[[NSMutableAttributedString alloc]
-													initWithString:cleanString
-													attributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                                /*
-                                                                 Did you create the attributed string using a CGFontRef as the value for the kCTFontAttributeName key? You must use a CTFontRef, not a CGFontRef. They are different.
-                                                                 
-                                                                 */
-                                                                self.font, (NSString*) kCTFontAttributeName,
-																self.defaultStringColor, (NSString*)kCTForegroundColorAttributeName,
-																nil
-																]
-													] autorelease];
-    
-	NSDictionary *thisAttributeDict;
-    
-    CFMutableAttributedStringRef attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
-    
-    if (aString != nil)
-        CFAttributedStringReplaceString (attrString, CFRangeMake(0, 0), (CFStringRef)cleanString);
-    
-    CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTForegroundColorAttributeName, defaultStringColor.CGColor);
-    CTFontRef theFont = CTFontCreateWithName((CFStringRef)font.fontName,
-                                             font.pointSize,
-                                             NULL);
-    CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, theFont);
-    
-    CFRelease(theFont);
-    for (thisAttributeDict in attributesAndRanges)
-	{
-        
-        
-        NSRange nsrange = [[thisAttributeDict objectForKey:kAttrDictKey_range] rangeValue];
-        CFIndex loc = nsrange.location;
-        CFIndex len = nsrange.length;
-        CFRange range = CFRangeMake(loc, len);
-        
-        
-        if ([[thisAttributeDict objectForKey:kAttrDictKey_attrName] isEqualToString:@"NSFont"]) {
-            
-            UIFont *uifont = [thisAttributeDict objectForKey:kAttrDictKey_attrValue];
-            CTFontRef theFont = CTFontCreateWithName((CFStringRef)uifont.fontName,
-                                                     uifont.pointSize,
-                                                     NULL);
-            
-            CFAttributedStringSetAttribute(attrString, range, kCTFontAttributeName, theFont);
-        }
-        else if ([[thisAttributeDict objectForKey:kAttrDictKey_attrName] isEqualToString:@"CTForegroundColor"]) {
-            
-            UIColor *uicolor = [thisAttributeDict objectForKey:kAttrDictKey_attrValue];
-            CGColorRef theColor = uicolor.CGColor;
-            
-            CFAttributedStringSetAttribute(attrString, range, kCTForegroundColorAttributeName, theColor);
-        }
-        else if ([[thisAttributeDict objectForKey:kAttrDictKey_attrName] isEqualToString:@"BackgroundColorAttributeName"]) {
-            // NOT SUCH THING, IT INVOLVES ANALIZING METRICS AND A HUGE PAIN IN THE ARSE
-        }
-        else if ([[thisAttributeDict objectForKey:kAttrDictKey_attrName] isEqualToString:(NSString *)kCTUnderlineStyleAttributeName]) {
-            // TEST
-            NSNumber *number = [thisAttributeDict objectForKey:kAttrDictKey_attrValue];
-            CFAttributedStringSetAttribute(attrString, range, kCTUnderlineStyleAttributeName, number);
-            
-        }
-        
-	}
-    
-    NSMutableAttributedString *ret = (NSMutableAttributedString *)attrString;
-    attributedString = ret;
-    
-	return attributedString;
+    if (aString == nil)
+        return nil;
+
+    NSString *cleanString;
+    NSArray *attributesAndRanges = [self attributesForString:aString cleanString:&cleanString];
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc]
+                                                   initWithString:cleanString
+                                                   attributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                                     self.font,                                            self.defaultStringColor,                                    nil
+                                                                                                                               ]];
+
+    for (NSDictionary *thisAttributeDict in attributesAndRanges)
+    {
+        [attributedString
+         addAttribute:thisAttributeDict[kAttrDictKey_attrName]
+         value:thisAttributeDict[kAttrDictKey_attrValue]
+         range:[thisAttributeDict[kAttrDictKey_range] rangeValue]
+         ];
+    }
+
+    return attributedString;
 }
 
-- (NSString*) ansiEscapedStringWithAttributedString:(NSAttributedString*)aAttributedString;
-{
-	NSRange limitRange;
-	NSRange effectiveRange;
-	id attributeValue;
-    
-	NSMutableArray *codesAndLocations = [NSMutableArray array];
-    
-	NSArray *attrNames = [NSArray arrayWithObjects:
-						  (NSString*) kCTFontAttributeName, (NSString*)kCTForegroundColorAttributeName,
-						  nil
-						  ];
-	NSString *thisAttrName;
-	for (thisAttrName in attrNames)
-	{
-		limitRange = NSMakeRange(0, [aAttributedString length]);
-		while (limitRange.length > 0)
-		{
-			attributeValue = [aAttributedString
-							  attribute:thisAttrName
-							  atIndex:limitRange.location
-							  longestEffectiveRange:&effectiveRange
-							  inRange:limitRange
-							  ];
-            
-			enum sgrCode thisSGRCode = SGRCodeNoneOrInvalid;
-            
-			if ([thisAttrName isEqualToString:(NSString*)kCTForegroundColorAttributeName])
-			{
-				if (attributeValue != nil) {
-                    //UIColor *color = [UIColor colorWithCGColor:attributeValue];
-                    CGColorRef color = (CGColorRef )attributeValue;
-					thisSGRCode = [self closestSGRCodeForColor:[UIColor colorWithCGColor:color] isForegroundColor:YES];
-				} else
-					thisSGRCode = SGRCodeFgReset;
-			}
-            // SEE NOTE ABOVE REGARDING BACKGROUND COLOR
-            /*
-             else if ([thisAttrName isEqualToString:@"BackgroundColorAttributeName"])
-             {
-             if (attributeValue != nil)
-             thisSGRCode = [self closestSGRCodeForColor:attributeValue isForegroundColor:NO];
-             else
-             thisSGRCode = SGRCodeBgReset;
-             }*/
-			else if ([thisAttrName isEqualToString:(NSString*) kCTFontAttributeName])
-			{
-				// we currently only use NSFontAttributeName for bolding so
-				// here we assume that the formatting "type" in ANSI SGR
-				// terms is indeed intensity
-				if (attributeValue != nil)
-					thisSGRCode = SGRCodeIntensityNormal;
-				else
-					thisSGRCode = SGRCodeIntensityNormal;
-			}
-            else if ([thisAttrName isEqualToString:(NSString *)kCTUnderlineStyleAttributeName])
-            {
-                if (attributeValue != nil)
-                {
-                    if ([attributeValue intValue] == kCTUnderlineStyleSingle)
-                        thisSGRCode = SGRCodeUnderlineSingle;
-                    else if ([attributeValue intValue] == kCTUnderlineStyleDouble)
-                        thisSGRCode = SGRCodeUnderlineDouble;
-                    else
-                        thisSGRCode = SGRCodeUnderlineNone;
-                }
-                else
-                    thisSGRCode = SGRCodeUnderlineNone;
-            }
-            
-			if (thisSGRCode != SGRCodeNoneOrInvalid)
-			{
-				[codesAndLocations addObject:
-				 [NSDictionary dictionaryWithObjectsAndKeys:
-				  [NSNumber numberWithInt:thisSGRCode], kCodeDictKey_code,
-				  [NSNumber numberWithUnsignedInteger:effectiveRange.location], kCodeDictKey_location,
-				  nil
-                  ]
-                 ];
-			}
-            
-			limitRange = NSMakeRange(NSMaxRange(effectiveRange),
-									 NSMaxRange(limitRange) - NSMaxRange(effectiveRange));
-		}
-	}
-    
-	NSString *ansiEscapedString = [self ansiEscapedStringWithCodesAndLocations:codesAndLocations cleanString:[aAttributedString string]];
-    
-	return ansiEscapedString;
-}
+//- (NSAttributedString*) oldattributedStringWithANSIEscapedString:(NSString*)aString
+//{
+//    if (aString == nil)
+//        return nil;
+//
+//    NSString *cleanString;
+//    NSArray *attributesAndRanges = [self attributesForString:aString cleanString:&cleanString];
+//    NSMutableAttributedString *attributedString = [[[NSMutableAttributedString alloc]
+//                                                    initWithString:cleanString
+//                                                    attributes:[NSDictionary dictionaryWithObjectsAndKeys:
+//                                                                /*
+//                                                                 Did you create the attributed string using a CGFontRef as the value for the kCTFontAttributeName key? You must use a CTFontRef, not a CGFontRef. They are different.
+//
+//                                                                 */
+//                                                                self.font, kDefaultFontSize,
+//                                                                self.defaultStringColor, kDefaultForegroundColor,
+//                                                                nil
+//                                                                ]
+//                                                    ] autorelease];
+//
+//    NSDictionary *thisAttributeDict;
+//
+//    CFMutableAttributedStringRef attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
+//
+//    if (aString != nil)
+//        CFAttributedStringReplaceString (attrString, CFRangeMake(0, 0), (CFStringRef)cleanString);
+//
+//    CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTForegroundColorAttributeName, defaultStringColor.CGColor);
+//    CTFontRef theFont = CTFontCreateWithName((CFStringRef)font.fontName,
+//                                             font.pointSize,
+//                                             NULL);
+//    CFAttributedStringSetAttribute(attrString, CFRangeMake(0, CFAttributedStringGetLength(attrString)), kCTFontAttributeName, theFont);
+//
+//    CFRelease(theFont);
+//    for (thisAttributeDict in attributesAndRanges)
+//    {
+//
+//
+//        NSRange nsrange = [[thisAttributeDict objectForKey:kAttrDictKey_range] rangeValue];
+//        CFIndex loc = nsrange.location;
+//        CFIndex len = nsrange.length;
+//        CFRange range = CFRangeMake(loc, len);
+//
+//
+//        if ([[thisAttributeDict objectForKey:kAttrDictKey_attrName] isEqualToString:@"NSFont"]) {
+//
+//            UIFont *uifont = [thisAttributeDict objectForKey:kAttrDictKey_attrValue];
+//            CTFontRef theFont = CTFontCreateWithName((CFStringRef)uifont.fontName,
+//                                                     uifont.pointSize,
+//                                                     NULL);
+//
+//            CFAttributedStringSetAttribute(attrString, range, kCTFontAttributeName, theFont);
+//        }
+//        else if ([[thisAttributeDict objectForKey:kAttrDictKey_attrName] isEqualToString:@"CTForegroundColor"]) {
+//
+//            UIColor *uicolor = [thisAttributeDict objectForKey:kAttrDictKey_attrValue];
+//            CGColorRef theColor = uicolor.CGColor;
+//
+//            CFAttributedStringSetAttribute(attrString, range, kCTForegroundColorAttributeName, theColor);
+//        }
+//        else if ([[thisAttributeDict objectForKey:kAttrDictKey_attrName] isEqualToString:@"BackgroundColorAttributeName"]) {
+//            // NOT SUCH THING, IT INVOLVES ANALIZING METRICS AND A HUGE PAIN IN THE ARSE
+//        }
+//        else if ([[thisAttributeDict objectForKey:kAttrDictKey_attrName] isEqualToString:(NSString *)kCTUnderlineStyleAttributeName]) {
+//            // TEST
+//            NSNumber *number = [thisAttributeDict objectForKey:kAttrDictKey_attrValue];
+//            CFAttributedStringSetAttribute(attrString, range, kCTUnderlineStyleAttributeName, number);
+//
+//        }
+//
+//    }
+//
+//    NSMutableAttributedString *ret = (NSMutableAttributedString *)attrString;
+//    attributedString = ret;
+//
+//    return attributedString;
+//}
+
+//- (NSString*) ansiEscapedStringWithAttributedString:(NSAttributedString*)aAttributedString;
+//{
+//    NSRange limitRange;
+//    NSRange effectiveRange;
+//    id attributeValue;
+//
+//    NSMutableArray *codesAndLocations = [NSMutableArray array];
+//
+//    NSArray *attrNames = [NSArray arrayWithObjects:
+//                          (NSString*) kCTFontAttributeName, (NSString*)kCTForegroundColorAttributeName,
+//                          nil
+//                          ];
+//    NSString *thisAttrName;
+//    for (thisAttrName in attrNames)
+//    {
+//        limitRange = NSMakeRange(0, [aAttributedString length]);
+//        while (limitRange.length > 0)
+//        {
+//            attributeValue = [aAttributedString
+//                              attribute:thisAttrName
+//                              atIndex:limitRange.location
+//                              longestEffectiveRange:&effectiveRange
+//                              inRange:limitRange
+//                              ];
+//
+//            enum sgrCode thisSGRCode = SGRCodeNoneOrInvalid;
+//
+//            if ([thisAttrName isEqualToString:(NSString*)kCTForegroundColorAttributeName])
+//            {
+//                if (attributeValue != nil) {
+//                    //UIColor *color = [UIColor colorWithCGColor:attributeValue];
+//                    CGColorRef color = (CGColorRef )attributeValue;
+//                    thisSGRCode = [self closestSGRCodeForColor:[UIColor colorWithCGColor:color] isForegroundColor:YES];
+//                } else
+//                    thisSGRCode = SGRCodeFgReset;
+//            }
+//            // SEE NOTE ABOVE REGARDING BACKGROUND COLOR
+//            /*
+//             else if ([thisAttrName isEqualToString:@"BackgroundColorAttributeName"])
+//             {
+//             if (attributeValue != nil)
+//             thisSGRCode = [self closestSGRCodeForColor:attributeValue isForegroundColor:NO];
+//             else
+//             thisSGRCode = SGRCodeBgReset;
+//             }*/
+//            else if ([thisAttrName isEqualToString:(NSString*) kCTFontAttributeName])
+//            {
+//                // we currently only use NSFontAttributeName for bolding so
+//                // here we assume that the formatting "type" in ANSI SGR
+//                // terms is indeed intensity
+//                if (attributeValue != nil)
+//                    thisSGRCode = SGRCodeIntensityNormal;
+//                else
+//                    thisSGRCode = SGRCodeIntensityNormal;
+//            }
+//            else if ([thisAttrName isEqualToString:(NSString *)kCTUnderlineStyleAttributeName])
+//            {
+//                if (attributeValue != nil)
+//                {
+//                    if ([attributeValue intValue] == kCTUnderlineStyleSingle)
+//                        thisSGRCode = SGRCodeUnderlineSingle;
+//                    else if ([attributeValue intValue] == kCTUnderlineStyleDouble)
+//                        thisSGRCode = SGRCodeUnderlineDouble;
+//                    else
+//                        thisSGRCode = SGRCodeUnderlineNone;
+//                }
+//                else
+//                    thisSGRCode = SGRCodeUnderlineNone;
+//            }
+//
+//            if (thisSGRCode != SGRCodeNoneOrInvalid)
+//            {
+//                [codesAndLocations addObject:
+//                 [NSDictionary dictionaryWithObjectsAndKeys:
+//                  [NSNumber numberWithInt:thisSGRCode], kCodeDictKey_code,
+//                  [NSNumber numberWithUnsignedInteger:effectiveRange.location], kCodeDictKey_location,
+//                  nil
+//                  ]
+//                 ];
+//            }
+//
+//            limitRange = NSMakeRange(NSMaxRange(effectiveRange),
+//                                     NSMaxRange(limitRange) - NSMaxRange(effectiveRange));
+//        }
+//    }
+//
+//    NSString *ansiEscapedString = [self ansiEscapedStringWithCodesAndLocations:codesAndLocations cleanString:[aAttributedString string]];
+//
+//    return ansiEscapedString;
+//}
 
 
 - (NSArray*) escapeCodesForString:(NSString*)aString cleanString:(NSString**)aCleanString
@@ -243,12 +297,14 @@
 	// along with their start locations within the "clean" version of aString
 	NSMutableArray *formatCodes = [NSMutableArray array];
     
-	NSUInteger aStringLength = [aString length];
+	//NSUInteger aStringLength = [aString length]; wrong length
+    NSUInteger aStringLength = [aString lengthOfBytesUsingEncoding:NSUTF32StringEncoding] / 4;
 	NSUInteger coveredLength = 0;
 	NSRange searchRange = NSMakeRange(0,aStringLength);
 	NSRange thisEscapeSequenceRange;
 	do
 	{
+        //NSLog(@"Got %lu string [%@]", aStringLength, aString);
 		thisEscapeSequenceRange = [aString rangeOfString:kANSIEscapeCSI options:NSLiteralSearch range:searchRange];
 		if (thisEscapeSequenceRange.location != NSNotFound)
 		{
@@ -261,7 +317,7 @@
 			unsigned int code = 0;
 			unsigned int lengthAddition = 1;
 			NSUInteger thisIndex;
-			for (;;)
+  			for (;;)
 			{
 				thisIndex = (NSMaxRange(thisEscapeSequenceRange)+lengthAddition-1);
 				if (thisIndex >= aStringLength)
@@ -425,7 +481,7 @@
 			case SGRCodeFgBrightMagenta:
 			case SGRCodeFgBrightCyan:
 			case SGRCodeFgBrightWhite:
-				thisAttributeName = (NSString *)kCTForegroundColorAttributeName;
+				thisAttributeName = NSForegroundColorAttributeName;
 				break;
             case SGRCodeBgBlack:
             case SGRCodeBgRed:
@@ -447,11 +503,11 @@
                 break;
 			case SGRCodeIntensityBold:
 			case SGRCodeIntensityNormal:
-				thisAttributeName = (NSString *)kCTFontAttributeName;
+				thisAttributeName = NSFontAttributeName;
 				break;
             case SGRCodeUnderlineSingle:
             case SGRCodeUnderlineDouble:
-                thisAttributeName = (NSString*)kCTUnderlineStyleAttributeName;
+                thisAttributeName = NSUnderlineStyleAttributeName;
                 break;
 			default:
 				continue;
@@ -508,10 +564,10 @@
             }
                 break;
             case SGRCodeUnderlineSingle:
-                thisAttributeValue = [NSNumber numberWithInteger:kCTUnderlineStyleSingle];
+                thisAttributeValue = @(NSUnderlineStyleSingle);
                 break;
             case SGRCodeUnderlineDouble:
-                thisAttributeValue = [NSNumber numberWithInteger:kCTUnderlineStyleDouble];
+                thisAttributeValue = @(NSUnderlineStyleDouble);
                 break;
 			default:
 				break;
@@ -1037,12 +1093,12 @@ static void RGBtoHSV( float r, float g, float b, float *h, float *s, float *v )
 		*h += 360;
 }
 
-CTFontRef CTFontCreateFromUIFont(UIFont *font)
-{
-    CTFontRef ctFont = CTFontCreateWithName((CFStringRef)font.fontName,
-                                            font.pointSize,
-                                            NULL);
-    return ctFont;
-}
+//CTFontRef CTFontCreateFromUIFont(UIFont *font)
+//{
+//    CTFontRef ctFont = CTFontCreateWithName((CFStringRef)font.fontName,
+//                                            font.pointSize,
+//                                            NULL);
+//    return ctFont;
+//}
 
 @end
