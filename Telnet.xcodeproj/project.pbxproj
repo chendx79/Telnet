@@ -10,6 +10,9 @@
 		65E356DA21901E7F004369FB /* libtelnet.c in Sources */ = {isa = PBXBuildFile; fileRef = 65E356D921901E7F004369FB /* libtelnet.c */; };
 		65E356E0219021DE004369FB /* UIColor+ANSI.m in Sources */ = {isa = PBXBuildFile; fileRef = 65E356DD219021DE004369FB /* UIColor+ANSI.m */; };
 		65E356E1219021DE004369FB /* AnsiEscapeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 65E356DE219021DE004369FB /* AnsiEscapeHelper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		65E356EC2192C610004369FB /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 65E356E52192C60F004369FB /* NSLayoutConstraint+PureLayout.m */; };
+		65E356ED2192C610004369FB /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 65E356E82192C60F004369FB /* ALView+PureLayout.m */; };
+		65E356EE2192C610004369FB /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 65E356EB2192C60F004369FB /* NSArray+PureLayout.m */; };
 		9362F3C41E14F67100842C29 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3C31E14F67100842C29 /* main.m */; };
 		9362F3C71E14F67100842C29 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3C61E14F67100842C29 /* AppDelegate.m */; };
 		9362F3CD1E14F67100842C29 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9362F3CB1E14F67100842C29 /* Main.storyboard */; };
@@ -28,6 +31,15 @@
 		65E356DD219021DE004369FB /* UIColor+ANSI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+ANSI.m"; sourceTree = "<group>"; };
 		65E356DE219021DE004369FB /* AnsiEscapeHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnsiEscapeHelper.m; sourceTree = "<group>"; };
 		65E356DF219021DE004369FB /* UIColor+ANSI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+ANSI.h"; sourceTree = "<group>"; };
+		65E356E32192C60F004369FB /* PureLayoutDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PureLayoutDefines.h; sourceTree = "<group>"; };
+		65E356E42192C60F004369FB /* ALView+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALView+PureLayout.h"; sourceTree = "<group>"; };
+		65E356E52192C60F004369FB /* NSLayoutConstraint+PureLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSLayoutConstraint+PureLayout.m"; sourceTree = "<group>"; };
+		65E356E62192C60F004369FB /* NSArray+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+PureLayout.h"; sourceTree = "<group>"; };
+		65E356E72192C60F004369FB /* NSLayoutConstraint+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSLayoutConstraint+PureLayout.h"; sourceTree = "<group>"; };
+		65E356E82192C60F004369FB /* ALView+PureLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ALView+PureLayout.m"; sourceTree = "<group>"; };
+		65E356E92192C60F004369FB /* PureLayout+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PureLayout+Internal.h"; sourceTree = "<group>"; };
+		65E356EA2192C60F004369FB /* PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PureLayout.h; sourceTree = "<group>"; };
+		65E356EB2192C60F004369FB /* NSArray+PureLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+PureLayout.m"; sourceTree = "<group>"; };
 		9362F3BF1E14F67100842C29 /* Telnet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Telnet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9362F3C31E14F67100842C29 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9362F3C51E14F67100842C29 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -70,6 +82,22 @@
 			name = AnsiEscapeHelper;
 			sourceTree = "<group>";
 		};
+		65E356E22192C60F004369FB /* PureLayout */ = {
+			isa = PBXGroup;
+			children = (
+				65E356E32192C60F004369FB /* PureLayoutDefines.h */,
+				65E356E42192C60F004369FB /* ALView+PureLayout.h */,
+				65E356E52192C60F004369FB /* NSLayoutConstraint+PureLayout.m */,
+				65E356E62192C60F004369FB /* NSArray+PureLayout.h */,
+				65E356E72192C60F004369FB /* NSLayoutConstraint+PureLayout.h */,
+				65E356E82192C60F004369FB /* ALView+PureLayout.m */,
+				65E356E92192C60F004369FB /* PureLayout+Internal.h */,
+				65E356EA2192C60F004369FB /* PureLayout.h */,
+				65E356EB2192C60F004369FB /* NSArray+PureLayout.m */,
+			);
+			path = PureLayout;
+			sourceTree = "<group>";
+		};
 		9362F3B61E14F67100842C29 = {
 			isa = PBXGroup;
 			children = (
@@ -90,6 +118,7 @@
 		9362F3C11E14F67100842C29 /* Telnet */ = {
 			isa = PBXGroup;
 			children = (
+				65E356E22192C60F004369FB /* PureLayout */,
 				65E356DB219021D2004369FB /* AnsiEscapeHelper */,
 				9362F3E81E14F74A00842C29 /* Model */,
 				9362F3E41E14F6FA00842C29 /* libtelnet */,
@@ -227,11 +256,14 @@
 				65E356E1219021DE004369FB /* AnsiEscapeHelper.m in Sources */,
 				9362F3DE1E14F69400842C29 /* TelnetViewController.m in Sources */,
 				9362F3C71E14F67100842C29 /* AppDelegate.m in Sources */,
+				65E356EC2192C610004369FB /* NSLayoutConstraint+PureLayout.m in Sources */,
 				E753D2931E1B54F30096FBD7 /* README.md in Sources */,
 				9362F3DD1E14F69400842C29 /* TelnetHostsViewController.m in Sources */,
+				65E356ED2192C610004369FB /* ALView+PureLayout.m in Sources */,
 				9362F3C41E14F67100842C29 /* main.m in Sources */,
 				9362F3EB1E14F75700842C29 /* HostsDataSource.m in Sources */,
 				65E356DA21901E7F004369FB /* libtelnet.c in Sources */,
+				65E356EE2192C610004369FB /* NSArray+PureLayout.m in Sources */,
 				65E356E0219021DE004369FB /* UIColor+ANSI.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

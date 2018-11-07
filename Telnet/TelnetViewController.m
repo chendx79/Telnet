@@ -9,6 +9,7 @@
 #import "TelnetViewController.h"
 #import "TelnetClient.h"
 #import "AnsiEscapeHelper.h"
+#import "PureLayout/PureLayout.h"
 
 #define kANSIColorPrefKey_FgBlack    @"ansiColorsFgBlack"
 #define kANSIColorPrefKey_FgWhite    @"ansiColorsFgWhite"
@@ -27,9 +28,15 @@
 #define kANSIColorPrefKey_BgMagenta    @"ansiColorsBgMagenta"
 #define kANSIColorPrefKey_BgCyan    @"ansiColorsBgCyan"
 
-@interface TelnetViewController () <TelnetDelegate, UITextViewDelegate, UIScrollViewDelegate>
+@interface TelnetViewController () <TelnetDelegate, UITextViewDelegate, UIScrollViewDelegate, UITextFieldDelegate>
 @property TelnetClient *client;
 @property BOOL doEcho;
+
+@property (nonatomic, assign) BOOL didSetupConstraints;
+@property (nonatomic, strong) UIView *mapView;
+@property (nonatomic, strong) UIView *toolView;
+@property (nonatomic, strong) UITextField *commandField;
+
 @end
 
 @implementation TelnetViewController
@@ -47,10 +54,46 @@
                                                                             target:self
                                                                             action:@selector(confirmQuit)];
     
-    [self.consoleView setFrame:self.view.bounds];
+    //[self.consoleView setFrame:self.view.bounds];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeSize:) name:UIKeyboardDidShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidChangeSize:) name:UIKeyboardDidHideNotification object:nil];
+
+    [self.view addSubview:self.mapView];//地图
+    [self.view addSubview:self.toolView];//按钮
+    self.commandField.delegate = self;
+    [self.toolView addSubview:self.commandField];//命令输入栏
+    [self.view setNeedsUpdateConstraints];
+}
+
+- (void) updateViewConstraints
+{
+    if (!self.didSetupConstraints) {
+        [self.mapView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+        [self.mapView autoSetDimensionsToSize:CGSizeMake(200, 100)];
+        [self.mapView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+        [self.mapView autoPinEdgeToSuperviewEdge:ALEdgeRight];
+
+        [self.toolView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+        [self.toolView autoSetDimensionsToSize:CGSizeMake(200, 330)];
+        [self.toolView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+        [self.toolView autoPinEdgeToSuperviewEdge:ALEdgeRight];
+
+        [self.consoleView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.mapView];
+        [self.consoleView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.toolView];
+        [self.consoleView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+        [self.consoleView autoPinEdgeToSuperviewEdge:ALEdgeRight];
+        [self.consoleView autoSetDimensionsToSize:CGSizeMake(200, 300)];
+
+        [self.commandField autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.toolView withOffset:50];
+        [self.commandField autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:20];
+        [self.commandField autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20];
+        [self.commandField autoSetDimensionsToSize:CGSizeMake(200, 30)];
+
+        self.didSetupConstraints = YES;
+    }
+
+    [super updateViewConstraints];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -103,51 +146,61 @@
 }
 */
 
-- (void)appendText:(NSString *)msg
+- (bool)appendText:(NSString *)msg
 {
     if (msg == nil)
-        return;
+        return false;
+
+    //处理AnsiEscapeString
+    ANSIEscapeHelper *ansiEscapeHelper = [[ANSIEscapeHelper alloc] init];
+    // set colors & font to use to ansiEscapeHelper
+    NSDictionary *colorPrefDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
+                                       [NSNumber numberWithInt:SGRCodeFgBlack], kANSIColorPrefKey_FgBlack,
+                                       [NSNumber numberWithInt:SGRCodeFgWhite], kANSIColorPrefKey_FgWhite,
+                                       [NSNumber numberWithInt:SGRCodeFgRed], kANSIColorPrefKey_FgRed,
+                                       [NSNumber numberWithInt:SGRCodeFgGreen], kANSIColorPrefKey_FgGreen,
+                                       [NSNumber numberWithInt:SGRCodeFgYellow], kANSIColorPrefKey_FgYellow,
+                                       [NSNumber numberWithInt:SGRCodeFgBlue], kANSIColorPrefKey_FgBlue,
+                                       [NSNumber numberWithInt:SGRCodeFgMagenta], kANSIColorPrefKey_FgMagenta,
+                                       [NSNumber numberWithInt:SGRCodeFgCyan], kANSIColorPrefKey_FgCyan,
+                                       [NSNumber numberWithInt:SGRCodeBgBlack], kANSIColorPrefKey_BgBlack,
+                                       [NSNumber numberWithInt:SGRCodeBgWhite], kANSIColorPrefKey_BgWhite,
+                                       [NSNumber numberWithInt:SGRCodeBgRed], kANSIColorPrefKey_BgRed,
+                                       [NSNumber numberWithInt:SGRCodeBgGreen], kANSIColorPrefKey_BgGreen,
+                                       [NSNumber numberWithInt:SGRCodeBgYellow], kANSIColorPrefKey_BgYellow,
+                                       [NSNumber numberWithInt:SGRCodeBgBlue], kANSIColorPrefKey_BgBlue,
+                                       [NSNumber numberWithInt:SGRCodeBgMagenta], kANSIColorPrefKey_BgMagenta,
+                                       [NSNumber numberWithInt:SGRCodeBgCyan], kANSIColorPrefKey_BgCyan,
+                                       nil];
+    NSUInteger iColorPrefDefaultsKey;
+    NSData *colorData;
+    NSString *thisPrefName;
+    for (iColorPrefDefaultsKey = 0; iColorPrefDefaultsKey < [[colorPrefDefaults allKeys] count]; iColorPrefDefaultsKey++)
+    {
+        thisPrefName = [[colorPrefDefaults allKeys] objectAtIndex:iColorPrefDefaultsKey];
+        colorData = [[NSUserDefaults standardUserDefaults] dataForKey:thisPrefName];
+        if (colorData != nil)
+        {
+            UIColor *thisColor = (UIColor *)[NSKeyedUnarchiver unarchiveObjectWithData:colorData];
+            [[ansiEscapeHelper ansiColors] setObject:thisColor forKey:[colorPrefDefaults objectForKey:thisPrefName]];
+        }
+    }
+    [ansiEscapeHelper setFont:[self.consoleView font]];
+
+    NSAttributedString *attrStr;
+    @try {
+        attrStr = [ansiEscapeHelper attributedStringWithANSIEscapedString:msg];
+    }
+    @catch (NSException *exception) {
+        return false;
+    }
+
     __weak TelnetViewController *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        //处理AnsiEscapeString
-        ANSIEscapeHelper *ansiEscapeHelper = [[ANSIEscapeHelper alloc] init];
-        // set colors & font to use to ansiEscapeHelper
-        NSDictionary *colorPrefDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
-                                           [NSNumber numberWithInt:SGRCodeFgBlack], kANSIColorPrefKey_FgBlack,
-                                           [NSNumber numberWithInt:SGRCodeFgWhite], kANSIColorPrefKey_FgWhite,
-                                           [NSNumber numberWithInt:SGRCodeFgRed], kANSIColorPrefKey_FgRed,
-                                           [NSNumber numberWithInt:SGRCodeFgGreen], kANSIColorPrefKey_FgGreen,
-                                           [NSNumber numberWithInt:SGRCodeFgYellow], kANSIColorPrefKey_FgYellow,
-                                           [NSNumber numberWithInt:SGRCodeFgBlue], kANSIColorPrefKey_FgBlue,
-                                           [NSNumber numberWithInt:SGRCodeFgMagenta], kANSIColorPrefKey_FgMagenta,
-                                           [NSNumber numberWithInt:SGRCodeFgCyan], kANSIColorPrefKey_FgCyan,
-                                           [NSNumber numberWithInt:SGRCodeBgBlack], kANSIColorPrefKey_BgBlack,
-                                           [NSNumber numberWithInt:SGRCodeBgWhite], kANSIColorPrefKey_BgWhite,
-                                           [NSNumber numberWithInt:SGRCodeBgRed], kANSIColorPrefKey_BgRed,
-                                           [NSNumber numberWithInt:SGRCodeBgGreen], kANSIColorPrefKey_BgGreen,
-                                           [NSNumber numberWithInt:SGRCodeBgYellow], kANSIColorPrefKey_BgYellow,
-                                           [NSNumber numberWithInt:SGRCodeBgBlue], kANSIColorPrefKey_BgBlue,
-                                           [NSNumber numberWithInt:SGRCodeBgMagenta], kANSIColorPrefKey_BgMagenta,
-                                           [NSNumber numberWithInt:SGRCodeBgCyan], kANSIColorPrefKey_BgCyan,
-                                           nil];
-        NSUInteger iColorPrefDefaultsKey;
-        NSData *colorData;
-        NSString *thisPrefName;
-        for (iColorPrefDefaultsKey = 0; iColorPrefDefaultsKey < [[colorPrefDefaults allKeys] count]; iColorPrefDefaultsKey++)
-        {
-            thisPrefName = [[colorPrefDefaults allKeys] objectAtIndex:iColorPrefDefaultsKey];
-            colorData = [[NSUserDefaults standardUserDefaults] dataForKey:thisPrefName];
-            if (colorData != nil)
-            {
-                UIColor *thisColor = (UIColor *)[NSKeyedUnarchiver unarchiveObjectWithData:colorData];
-                [[ansiEscapeHelper ansiColors] setObject:thisColor forKey:[colorPrefDefaults objectForKey:thisPrefName]];
-            }
-        }
-        [ansiEscapeHelper setFont:[self.consoleView font]];
+
 
         NSMutableAttributedString *fullTextAttributed = [[NSMutableAttributedString alloc] initWithAttributedString:weakSelf.consoleView.attributedText];
-        NSAttributedString *attrStr = [ansiEscapeHelper attributedStringWithANSIEscapedString:msg];
-        //NSAttributedString *attrStr = [ansiEscapeHelper attributedStringWithANSIEscapedString:@"\x1b[32mgreen\x1b[0m"];
+
         [fullTextAttributed appendAttributedString:attrStr];
 
         weakSelf.consoleView.attributedText = fullTextAttributed;
@@ -159,12 +212,15 @@
         NSRange visibleRange = NSMakeRange(weakSelf.consoleView.text.length-2, 1);
         [weakSelf.consoleView scrollRangeToVisible:visibleRange];
     });
+
+    return true;
 }
 
 #pragma mark - UIKeyboardEvent
 
 - (void)keyboardWillChangeSize:(NSNotification *)notification
 {
+    return;
     NSLog(@"%s", __func__);
     NSDictionary *info = notification.userInfo;
     
@@ -179,18 +235,48 @@
 
 - (void)keyboardDidChangeSize:(NSNotification *)notification
 {
+    return;
     NSLog(@"%s", __func__);
     
     [self.consoleView setBounds:self.view.bounds];
     [self.consoleView setCenter:self.view.center];
 }
 
+- (UIView *)mapView
+{
+    if (!_mapView) {
+        _mapView = [UIView newAutoLayoutView];
+        _mapView.backgroundColor = [UIColor grayColor];
+    }
+    return _mapView;
+}
+
+- (UIView *)toolView
+{
+    if (!_toolView) {
+        _toolView = [UIView newAutoLayoutView];
+        _toolView.backgroundColor = [UIColor grayColor];
+    }
+    return _toolView;
+}
+
+- (UITextField *)commandField
+{
+    if (!_commandField) {
+        _commandField = [UITextField newAutoLayoutView];
+        _commandField.backgroundColor = [UIColor whiteColor];
+        [_commandField setAutocorrectionType:UITextAutocorrectionTypeNo];
+        [_commandField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+    }
+    return _commandField;
+}
+
 #pragma mark - TelnetDelegate
 
-- (void)didReceiveMessage:(NSString *)msg
+- (bool)didReceiveMessage:(NSString *)msg
 {
     NSLog(@"Got %lu string [%@]", [msg length], msg);
-    [self appendText:msg];
+    return [self appendText:msg];
 }
 
 - (void)shouldEcho:(BOOL)echo
@@ -211,4 +297,12 @@
     }
     return NO;
 }
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField{
+    NSLog(@"%@", _commandField.text);
+    [self.client writeMessage:[_commandField.text stringByAppendingString:@"\n"]];
+    [_commandField selectAll:self];
+    return YES;
+}
+
 @end

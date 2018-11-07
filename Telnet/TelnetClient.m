@@ -38,6 +38,18 @@ static void _send(id client, const char *buffer, size_t size) {
     void (*myObjCSelectorPointer)(id, SEL, NSData *)  = (void (*)(id,SEL,NSData *))[client methodForSelector:@selector(flushData:)];
     myObjCSelectorPointer(client, @selector(flushData:), data);
 }
+
+- (void)startTimer{
+    NSTimer *UIScrollView = [NSTimer timerWithTimeInterval:0.5 target:self selector:@selector(action:) userInfo:nil repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+}
+
+- (void)action:(NSTimer *)sender {
+    static int i = 0;
+    NSLog(@"NSTimer: %d",i);
+    i++;
+}
+
 static void _display(id telnetDelegate, const char *buffer, size_t size) {
     //中文编码转换
     NSStringEncoding gbkEncoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
@@ -53,15 +65,17 @@ static void _display(id telnetDelegate, const char *buffer, size_t size) {
     {
         return;
     }
-    else
-    {
-        [recBuf resetBytesInRange:NSMakeRange(0, recBuf.length)];
-        [recBuf setLength:0];
-    }
 
     SEL sel = @selector(didReceiveMessage:);
-    void (*myObjCSelectorPointer)(id, SEL, NSString *)  = (void (*)(id,SEL,NSString *))[telnetDelegate methodForSelector:sel];
-    myObjCSelectorPointer(telnetDelegate, sel, msg);
+    bool (*myObjCSelectorPointer)(id, SEL, NSString *)  = (bool (*)(id,SEL,NSString *))[telnetDelegate methodForSelector:sel];
+    if (!myObjCSelectorPointer(telnetDelegate, sel, msg))
+    {
+        return;
+    }
+
+    //如果成功处理完成，清空缓存
+    [recBuf resetBytesInRange:NSMakeRange(0, recBuf.length)];
+    [recBuf setLength:0];
 }
 static void _doEcho(id telnetDelegate, int echo) {
     BOOL doEcho;

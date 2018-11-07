@@ -54,7 +54,7 @@
 #define kDefaultANSIColorBgBrightWhite      kDefaultANSIColorFgBrightWhite
 
 #define kDefaultFontSize [NSFont systemFontSize]
-#define kDefaultForegroundColor UIColor.blackColor
+#define kDefaultForegroundColor UIColor.greenColor
 
 // minimum weight for an NSFont for it to be considered bold
 #define kBoldFontMinWeight          9
@@ -92,12 +92,26 @@
         return nil;
 
     NSString *cleanString;
-    NSArray *attributesAndRanges = [self attributesForString:aString cleanString:&cleanString];
+    NSArray *attributesAndRanges;
+    @try {
+        attributesAndRanges = [self attributesForString:aString cleanString:&cleanString];
+    }
+    @catch (NSException *exception) {
+        return nil;
+    }
+
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc]
                                                    initWithString:cleanString
                                                    attributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                                     self.font,                                            self.defaultStringColor,                                    nil
+                                                                     self.font,                                            [UIColor greenColor],                                    nil
                                                                                                                                ]];
+    //默认字体大小、颜色
+    NSDictionary *dic = @{
+                          NSFontAttributeName : [UIFont systemFontOfSize:11],
+                          NSForegroundColorAttributeName : [UIColor greenColor]
+                          };
+
+    [attributedString addAttributes:dic range:NSMakeRange(0, [attributedString length])];
 
     for (NSDictionary *thisAttributeDict in attributesAndRanges)
     {
@@ -298,7 +312,8 @@
 	NSMutableArray *formatCodes = [NSMutableArray array];
     
 	//NSUInteger aStringLength = [aString length]; wrong length
-    NSUInteger aStringLength = [aString lengthOfBytesUsingEncoding:NSUTF32StringEncoding] / 4;
+    //NSUInteger aStringLength = [aString lengthOfBytesUsingEncoding:NSUTF8StringEncoding] / 4;
+    NSUInteger aStringLength = [aString length];
 	NSUInteger coveredLength = 0;
 	NSRange searchRange = NSMakeRange(0,aStringLength);
 	NSRange thisEscapeSequenceRange;
