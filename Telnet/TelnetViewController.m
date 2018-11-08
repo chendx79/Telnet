@@ -8,25 +8,8 @@
 
 #import "TelnetViewController.h"
 #import "TelnetClient.h"
-#import "AnsiEscapeHelper.h"
 #import "PureLayout/PureLayout.h"
-
-#define kANSIColorPrefKey_FgBlack    @"ansiColorsFgBlack"
-#define kANSIColorPrefKey_FgWhite    @"ansiColorsFgWhite"
-#define kANSIColorPrefKey_FgRed        @"ansiColorsFgRed"
-#define kANSIColorPrefKey_FgGreen    @"ansiColorsFgGreen"
-#define kANSIColorPrefKey_FgYellow    @"ansiColorsFgYellow"
-#define kANSIColorPrefKey_FgBlue    @"ansiColorsFgBlue"
-#define kANSIColorPrefKey_FgMagenta    @"ansiColorsFgMagenta"
-#define kANSIColorPrefKey_FgCyan    @"ansiColorsFgCyan"
-#define kANSIColorPrefKey_BgBlack    @"ansiColorsBgBlack"
-#define kANSIColorPrefKey_BgWhite    @"ansiColorsBgWhite"
-#define kANSIColorPrefKey_BgRed        @"ansiColorsBgRed"
-#define kANSIColorPrefKey_BgGreen    @"ansiColorsBgGreen"
-#define kANSIColorPrefKey_BgYellow    @"ansiColorsBgYellow"
-#define kANSIColorPrefKey_BgBlue    @"ansiColorsBgBlue"
-#define kANSIColorPrefKey_BgMagenta    @"ansiColorsBgMagenta"
-#define kANSIColorPrefKey_BgCyan    @"ansiColorsBgCyan"
+#import "GameLogic/GameLogic.h"
 
 @interface TelnetViewController () <TelnetDelegate, UITextViewDelegate, UIScrollViewDelegate, UITextFieldDelegate>
 @property TelnetClient *client;
@@ -146,54 +129,15 @@
 }
 */
 
-- (bool)appendText:(NSString *)msg
+- (void)appendText:(NSString *)msg
 {
     if (msg == nil)
-        return false;
+        return;
 
-    //处理AnsiEscapeString
-    ANSIEscapeHelper *ansiEscapeHelper = [[ANSIEscapeHelper alloc] init];
-    // set colors & font to use to ansiEscapeHelper
-    NSDictionary *colorPrefDefaults = [NSDictionary dictionaryWithObjectsAndKeys:
-                                       [NSNumber numberWithInt:SGRCodeFgBlack], kANSIColorPrefKey_FgBlack,
-                                       [NSNumber numberWithInt:SGRCodeFgWhite], kANSIColorPrefKey_FgWhite,
-                                       [NSNumber numberWithInt:SGRCodeFgRed], kANSIColorPrefKey_FgRed,
-                                       [NSNumber numberWithInt:SGRCodeFgGreen], kANSIColorPrefKey_FgGreen,
-                                       [NSNumber numberWithInt:SGRCodeFgYellow], kANSIColorPrefKey_FgYellow,
-                                       [NSNumber numberWithInt:SGRCodeFgBlue], kANSIColorPrefKey_FgBlue,
-                                       [NSNumber numberWithInt:SGRCodeFgMagenta], kANSIColorPrefKey_FgMagenta,
-                                       [NSNumber numberWithInt:SGRCodeFgCyan], kANSIColorPrefKey_FgCyan,
-                                       [NSNumber numberWithInt:SGRCodeBgBlack], kANSIColorPrefKey_BgBlack,
-                                       [NSNumber numberWithInt:SGRCodeBgWhite], kANSIColorPrefKey_BgWhite,
-                                       [NSNumber numberWithInt:SGRCodeBgRed], kANSIColorPrefKey_BgRed,
-                                       [NSNumber numberWithInt:SGRCodeBgGreen], kANSIColorPrefKey_BgGreen,
-                                       [NSNumber numberWithInt:SGRCodeBgYellow], kANSIColorPrefKey_BgYellow,
-                                       [NSNumber numberWithInt:SGRCodeBgBlue], kANSIColorPrefKey_BgBlue,
-                                       [NSNumber numberWithInt:SGRCodeBgMagenta], kANSIColorPrefKey_BgMagenta,
-                                       [NSNumber numberWithInt:SGRCodeBgCyan], kANSIColorPrefKey_BgCyan,
-                                       nil];
-    NSUInteger iColorPrefDefaultsKey;
-    NSData *colorData;
-    NSString *thisPrefName;
-    for (iColorPrefDefaultsKey = 0; iColorPrefDefaultsKey < [[colorPrefDefaults allKeys] count]; iColorPrefDefaultsKey++)
-    {
-        thisPrefName = [[colorPrefDefaults allKeys] objectAtIndex:iColorPrefDefaultsKey];
-        colorData = [[NSUserDefaults standardUserDefaults] dataForKey:thisPrefName];
-        if (colorData != nil)
-        {
-            UIColor *thisColor = (UIColor *)[NSKeyedUnarchiver unarchiveObjectWithData:colorData];
-            [[ansiEscapeHelper ansiColors] setObject:thisColor forKey:[colorPrefDefaults objectForKey:thisPrefName]];
-        }
-    }
-    [ansiEscapeHelper setFont:[self.consoleView font]];
+    NSAttributedString *attrStr = [[GameLogic shareInstance] filterMessage:msg];
 
-    NSAttributedString *attrStr;
-    @try {
-        attrStr = [ansiEscapeHelper attributedStringWithANSIEscapedString:msg];
-    }
-    @catch (NSException *exception) {
-        return false;
-    }
+    if (msg == nil)
+        return;
 
     __weak TelnetViewController *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -213,7 +157,6 @@
         [weakSelf.consoleView scrollRangeToVisible:visibleRange];
     });
 
-    return true;
 }
 
 #pragma mark - UIKeyboardEvent
@@ -273,10 +216,9 @@
 
 #pragma mark - TelnetDelegate
 
-- (bool)didReceiveMessage:(NSString *)msg
+- (void)didReceiveMessage:(NSString *)msg
 {
-    NSLog(@"Got %lu string [%@]", [msg length], msg);
-    return [self appendText:msg];
+    [self appendText:msg];
 }
 
 - (void)shouldEcho:(BOOL)echo
@@ -299,8 +241,9 @@
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
-    //NSLog(@"%@", _commandField.text);
+    NSLog(@"%@", _commandField.text);
     [self.client writeMessage:[_commandField.text stringByAppendingString:@"\n"]];
+    [[GameLogic shareInstance] logSentMessage:_commandField.text];
     [_commandField selectAll:self];
     return YES;
 }

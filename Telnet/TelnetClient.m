@@ -42,7 +42,8 @@ static void _send(id client, const char *buffer, size_t size) {
 
 - (void)startTimer:(id)telnetDelegate{
     timerStarted = true;
-    NSTimer *timer = [NSTimer timerWithTimeInterval:0.2 target:self selector:@selector(action:) userInfo:telnetDelegate repeats:NO];
+    //暂时是设置的300ms的延时处理，后续可以调整
+    NSTimer *timer = [NSTimer timerWithTimeInterval:0.3 target:self selector:@selector(action:) userInfo:telnetDelegate repeats:NO];
     [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
 }
 
@@ -59,12 +60,8 @@ static void _send(id client, const char *buffer, size_t size) {
 
     SEL sel = @selector(didReceiveMessage:);
     id telnetDelegate = sender.userInfo;
-    bool (*myObjCSelectorPointer)(id, SEL, NSString *)  = (bool (*)(id,SEL,NSString *))[telnetDelegate methodForSelector:sel];
-    if (!myObjCSelectorPointer(telnetDelegate, sel, msg))
-    {
-        timerStarted = false;
-        return;
-    }
+    void (*myObjCSelectorPointer)(id, SEL, NSString *)  = (void (*)(id,SEL,NSString *))[telnetDelegate methodForSelector:sel];
+    myObjCSelectorPointer(telnetDelegate, sel, msg);
 
     //如果成功处理完成，清空缓存
     [recBuf resetBytesInRange:NSMakeRange(0, recBuf.length)];
@@ -84,26 +81,11 @@ static void _display(id client, id telnetDelegate, const char *buffer, size_t si
         [recBuf appendData:data];
     }
 
+    //收到消息后不马上处理，而是打开一个timer延时处理，防止后面有断包没有收完
     if (!timerStarted) {
         void (*myObjCSelectorPointer2)(id, SEL, id)  = (void (*)(id,SEL, id))[client methodForSelector:@selector(startTimer:)];
         myObjCSelectorPointer2(client, @selector(startTimer:), telnetDelegate);
     }
-//    NSString *msg = [[NSString alloc] initWithData:recBuf encoding:gbkEncoding];
-//    if (msg == nil)
-//    {
-//        return;
-//    }
-//
-//    SEL sel = @selector(didReceiveMessage:);
-//    bool (*myObjCSelectorPointer)(id, SEL, NSString *)  = (bool (*)(id,SEL,NSString *))[telnetDelegate methodForSelector:sel];
-//    if (!myObjCSelectorPointer(telnetDelegate, sel, msg))
-//    {
-//        return;
-//    }
-//
-//    //如果成功处理完成，清空缓存
-//    [recBuf resetBytesInRange:NSMakeRange(0, recBuf.length)];
-//    [recBuf setLength:0];
 }
 static void _doEcho(id telnetDelegate, int echo) {
     BOOL doEcho;

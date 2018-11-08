@@ -44,17 +44,7 @@
 #define kBrightColorSaturation  0.4
 #define kBrightColorAlpha       1.0
 
-#define kDefaultANSIColorBgBrightBlack      kDefaultANSIColorFgBrightBlack
-#define kDefaultANSIColorBgBrightRed        kDefaultANSIColorFgBrightRed
-#define kDefaultANSIColorBgBrightGreen      kDefaultANSIColorFgBrightGreen
-#define kDefaultANSIColorBgBrightYellow     kDefaultANSIColorFgBrightYellow
-#define kDefaultANSIColorBgBrightBlue       kDefaultANSIColorFgBrightBlue
-#define kDefaultANSIColorBgBrightMagenta    kDefaultANSIColorFgBrightMagenta
-#define kDefaultANSIColorBgBrightCyan       kDefaultANSIColorFgBrightCyan
-#define kDefaultANSIColorBgBrightWhite      kDefaultANSIColorFgBrightWhite
 
-#define kDefaultFontSize [NSFont systemFontSize]
-#define kDefaultForegroundColor UIColor.greenColor
 
 // minimum weight for an NSFont for it to be considered bold
 #define kBoldFontMinWeight          9
@@ -86,22 +76,15 @@
 	[super dealloc];
 }
 
-- (NSAttributedString*) attributedStringWithANSIEscapedString:(NSString*)aString
+- (NSAttributedString*) attributedStringWithANSIEscapedString:(NSString*)aString cleanString:(NSString**)aCleanString
 {
     if (aString == nil)
         return nil;
 
-    NSString *cleanString;
-    NSArray *attributesAndRanges;
-    @try {
-        attributesAndRanges = [self attributesForString:aString cleanString:&cleanString];
-    }
-    @catch (NSException *exception) {
-        return nil;
-    }
+    NSArray * attributesAndRanges = [self attributesForString:aString cleanString:aCleanString];
 
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc]
-                                                   initWithString:cleanString
+                                                   initWithString:*aCleanString
                                                    attributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                                                      self.font,                                            [UIColor greenColor],                                    nil
                                                                                                                                ]];

@@ -108,8 +108,34 @@
 // minimum weight for an NSFont for it to be considered bold
 #define kBoldFontMinWeight			9
 
+#define kANSIColorPrefKey_FgBlack    @"ansiColorsFgBlack"
+#define kANSIColorPrefKey_FgWhite    @"ansiColorsFgWhite"
+#define kANSIColorPrefKey_FgRed        @"ansiColorsFgRed"
+#define kANSIColorPrefKey_FgGreen    @"ansiColorsFgGreen"
+#define kANSIColorPrefKey_FgYellow    @"ansiColorsFgYellow"
+#define kANSIColorPrefKey_FgBlue    @"ansiColorsFgBlue"
+#define kANSIColorPrefKey_FgMagenta    @"ansiColorsFgMagenta"
+#define kANSIColorPrefKey_FgCyan    @"ansiColorsFgCyan"
+#define kANSIColorPrefKey_BgBlack    @"ansiColorsBgBlack"
+#define kANSIColorPrefKey_BgWhite    @"ansiColorsBgWhite"
+#define kANSIColorPrefKey_BgRed        @"ansiColorsBgRed"
+#define kANSIColorPrefKey_BgGreen    @"ansiColorsBgGreen"
+#define kANSIColorPrefKey_BgYellow    @"ansiColorsBgYellow"
+#define kANSIColorPrefKey_BgBlue    @"ansiColorsBgBlue"
+#define kANSIColorPrefKey_BgMagenta    @"ansiColorsBgMagenta"
+#define kANSIColorPrefKey_BgCyan    @"ansiColorsBgCyan"
 
+#define kDefaultANSIColorBgBrightBlack      kDefaultANSIColorFgBrightBlack
+#define kDefaultANSIColorBgBrightRed        kDefaultANSIColorFgBrightRed
+#define kDefaultANSIColorBgBrightGreen      kDefaultANSIColorFgBrightGreen
+#define kDefaultANSIColorBgBrightYellow     kDefaultANSIColorFgBrightYellow
+#define kDefaultANSIColorBgBrightBlue       kDefaultANSIColorFgBrightBlue
+#define kDefaultANSIColorBgBrightMagenta    kDefaultANSIColorFgBrightMagenta
+#define kDefaultANSIColorBgBrightCyan       kDefaultANSIColorFgBrightCyan
+#define kDefaultANSIColorBgBrightWhite      kDefaultANSIColorFgBrightWhite
 
+#define kDefaultFontSize [NSFont systemFontSize]
+#define kDefaultForegroundColor UIColor.greenColor
 
 /*!
  @enum			sgrCode
@@ -231,7 +257,7 @@ enum sgrCode
  @result		An attributed string that mimics as closely as possible
  the formatting of the given ANSI-escaped string.
  */
-- (NSAttributedString*) attributedStringWithANSIEscapedString:(NSString*)aString;
+- (NSAttributedString*) attributedStringWithANSIEscapedString:(NSString*)aString cleanString:(NSString**)aCleanString;
 
 
 /*!
