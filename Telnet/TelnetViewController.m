@@ -221,11 +221,11 @@
 - (void)keyboardWillChangeSize:(NSNotification *)notification
 {
     return;
-    NSLog(@"%s", __func__);
+    //NSLog(@"%s", __func__);
     NSDictionary *info = notification.userInfo;
     
     CGRect r = [info[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    NSLog(@"keyboard %@", NSStringFromCGRect(r));
+    //NSLog(@"keyboard %@", NSStringFromCGRect(r));
     
     CGRect oriBound = self.consoleView.bounds;
     [self.consoleView setBounds:CGRectMake(0, 0, oriBound.size.width, oriBound.size.height-r.size.height)];
@@ -236,7 +236,7 @@
 - (void)keyboardDidChangeSize:(NSNotification *)notification
 {
     return;
-    NSLog(@"%s", __func__);
+    //NSLog(@"%s", __func__);
     
     [self.consoleView setBounds:self.view.bounds];
     [self.consoleView setCenter:self.view.center];
@@ -281,7 +281,7 @@
 
 - (void)shouldEcho:(BOOL)echo
 {
-    NSLog(@"%s %d", __func__, echo);
+    //NSLog(@"%s %d", __func__, echo);
 }
 
 #pragma mark - UITextViewDelegate
@@ -292,14 +292,14 @@
     int isBackSpace = strcmp(_char, "\b");
     
     if (isBackSpace == -8) {
-        NSLog(@"Backspace was pressed");
+        //NSLog(@"Backspace was pressed");
         return YES;
     }
     return NO;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
-    NSLog(@"%@", _commandField.text);
+    //NSLog(@"%@", _commandField.text);
     [self.client writeMessage:[_commandField.text stringByAppendingString:@"\n"]];
     [_commandField selectAll:self];
     return YES;

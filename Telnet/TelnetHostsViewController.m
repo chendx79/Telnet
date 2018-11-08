@@ -61,7 +61,7 @@
 */
 - (IBAction)addButtonClicked:(id)sender
 {
-    NSLog(@"%s", __func__);
+    //NSLog(@"%s", __func__);
     [self resignTextFirstResponder];
     
     NSString *host = self.hostField.text;
@@ -69,7 +69,7 @@
     NSString *user = self.usernameField.text;
     NSString *pwd = self.passwordField.text;
     
-    NSLog(@"%@ %@ %@ %@", host, port, user, pwd);
+    //NSLog(@"%@ %@ %@ %@", host, port, user, pwd);
     [self.dataSource insertEntryWithHost:host port:port username:user password:pwd];
     [self.tableView reloadData];
 }
@@ -78,7 +78,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"%s %ld", __func__, (long)indexPath.section);
+    //NSLog(@"%s %ld", __func__, (long)indexPath.section);
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];

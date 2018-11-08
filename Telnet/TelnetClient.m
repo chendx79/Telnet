@@ -22,6 +22,7 @@
 @end
 
 NSMutableData *recBuf;
+bool timerStarted;
 
 @implementation TelnetClient
 
@@ -39,20 +40,42 @@ static void _send(id client, const char *buffer, size_t size) {
     myObjCSelectorPointer(client, @selector(flushData:), data);
 }
 
-- (void)startTimer{
-    NSTimer *UIScrollView = [NSTimer timerWithTimeInterval:0.5 target:self selector:@selector(action:) userInfo:nil repeats:YES];
+- (void)startTimer:(id)telnetDelegate{
+    timerStarted = true;
+    NSTimer *timer = [NSTimer timerWithTimeInterval:0.2 target:self selector:@selector(action:) userInfo:telnetDelegate repeats:NO];
     [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
 }
 
-- (void)action:(NSTimer *)sender {
-    static int i = 0;
-    NSLog(@"NSTimer: %d",i);
-    i++;
+- (void)action:(NSTimer *)sender{
+    NSLog(@"NSTimer: -------------------------------------------------");
+
+    NSStringEncoding gbkEncoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
+    NSString *msg = [[NSString alloc] initWithData:recBuf encoding:gbkEncoding];
+    if (msg == nil)
+    {
+        timerStarted = false;
+        return;
+    }
+
+    SEL sel = @selector(didReceiveMessage:);
+    id telnetDelegate = sender.userInfo;
+    bool (*myObjCSelectorPointer)(id, SEL, NSString *)  = (bool (*)(id,SEL,NSString *))[telnetDelegate methodForSelector:sel];
+    if (!myObjCSelectorPointer(telnetDelegate, sel, msg))
+    {
+        timerStarted = false;
+        return;
+    }
+
+    //如果成功处理完成，清空缓存
+    [recBuf resetBytesInRange:NSMakeRange(0, recBuf.length)];
+    [recBuf setLength:0];
+    
+    timerStarted = false;
 }
 
-static void _display(id telnetDelegate, const char *buffer, size_t size) {
+static void _display(id client, id telnetDelegate, const char *buffer, size_t size) {
+    NSLog(@"_display: ***********************************************************************");
     //中文编码转换
-    NSStringEncoding gbkEncoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
     NSData* data = [NSData dataWithBytes:buffer length:size];
     if (recBuf == nil) {
         recBuf = [[NSMutableData alloc] initWithData:data];
@@ -60,22 +83,27 @@ static void _display(id telnetDelegate, const char *buffer, size_t size) {
     else{
         [recBuf appendData:data];
     }
-    NSString *msg = [[NSString alloc] initWithData:recBuf encoding:gbkEncoding];
-    if (msg == nil)
-    {
-        return;
-    }
 
-    SEL sel = @selector(didReceiveMessage:);
-    bool (*myObjCSelectorPointer)(id, SEL, NSString *)  = (bool (*)(id,SEL,NSString *))[telnetDelegate methodForSelector:sel];
-    if (!myObjCSelectorPointer(telnetDelegate, sel, msg))
-    {
-        return;
+    if (!timerStarted) {
+        void (*myObjCSelectorPointer2)(id, SEL, id)  = (void (*)(id,SEL, id))[client methodForSelector:@selector(startTimer:)];
+        myObjCSelectorPointer2(client, @selector(startTimer:), telnetDelegate);
     }
-
-    //如果成功处理完成，清空缓存
-    [recBuf resetBytesInRange:NSMakeRange(0, recBuf.length)];
-    [recBuf setLength:0];
+//    NSString *msg = [[NSString alloc] initWithData:recBuf encoding:gbkEncoding];
+//    if (msg == nil)
+//    {
+//        return;
+//    }
+//
+//    SEL sel = @selector(didReceiveMessage:);
+//    bool (*myObjCSelectorPointer)(id, SEL, NSString *)  = (bool (*)(id,SEL,NSString *))[telnetDelegate methodForSelector:sel];
+//    if (!myObjCSelectorPointer(telnetDelegate, sel, msg))
+//    {
+//        return;
+//    }
+//
+//    //如果成功处理完成，清空缓存
+//    [recBuf resetBytesInRange:NSMakeRange(0, recBuf.length)];
+//    [recBuf setLength:0];
 }
 static void _doEcho(id telnetDelegate, int echo) {
     BOOL doEcho;
@@ -91,8 +119,8 @@ static void _doEcho(id telnetDelegate, int echo) {
 
 static void _event_handler(telnet_t *telnet, telnet_event_t *ev,
                            void *user_data) {
-    printf("%s %d\n", __func__, ev->type);
-    
+    //printf("%s %d\n", __func__, ev->type);
+
     TelnetClient *client = (__bridge TelnetClient *)user_data;
     id<TelnetDelegate> telnetDelegate = client.delegate;
     
@@ -100,7 +128,7 @@ static void _event_handler(telnet_t *telnet, telnet_event_t *ev,
             /* data received */
         case TELNET_EV_DATA:
             //printf("data：%.*s", (int)ev->data.size, ev->data.buffer);
-            _display(telnetDelegate, ev->data.buffer, ev->data.size);
+            _display(client, telnetDelegate, ev->data.buffer, ev->data.size);
             break;
             /* data must be sent */
         case TELNET_EV_SEND:
@@ -166,7 +194,7 @@ static void _event_handler(telnet_t *telnet, telnet_event_t *ev,
 
 - (void)scheduleInRunLoop:(NSRunLoop *)aRunLoop forMode:(NSString *)mode
 {
-    NSLog(@"%s", __func__);
+    //NSLog(@"%s", __func__);
     [self.inputStream setDelegate:self];
     [self.outputStream setDelegate:self];
     
@@ -176,20 +204,20 @@ static void _event_handler(telnet_t *telnet, telnet_event_t *ev,
 
 - (void)scheduleInRunLoop
 {
-    NSLog(@"%s", __func__);
+    //NSLog(@"%s", __func__);
     [self scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
 }
 
 - (void)openStreams
 {
-    NSLog(@"%s %@ %@", __func__, self.inputStream, self.outputStream);
+    //NSLog(@"%s %@ %@", __func__, self.inputStream, self.outputStream);
     [self.inputStream open];
     [self.outputStream open];
 }
 
 - (void)setup:(HostEntry *)entry
 {
-    NSLog(@"%s %@", __func__, entry);
+    //NSLog(@"%s %@", __func__, entry);
     hostName = entry.host;
     port = entry.port.intValue;
     
@@ -199,10 +227,10 @@ static void _event_handler(telnet_t *telnet, telnet_event_t *ev,
     CFStreamCreatePairWithSocketToCFHost(NULL, host, port, &readStream, &writeStream);
     CFRelease(host);
     if (!(readStream && writeStream)) {
-        NSLog(@"Failed to create read&write stream");
+        //NSLog(@"Failed to create read&write stream");
         return ;
     } else {
-        NSLog(@"Successfully create read&write stream");
+        //NSLog(@"Successfully create read&write stream");
     }
     
     self.inputStream = (__bridge NSInputStream *)readStream;
@@ -216,7 +244,7 @@ static void _event_handler(telnet_t *telnet, telnet_event_t *ev,
 
 - (void)dealloc
 {
-    NSLog(@"%s", __func__);
+    //NSLog(@"%s", __func__);
     
     [self.inputStream close];
     [self.outputStream close];
@@ -232,7 +260,7 @@ static void _event_handler(telnet_t *telnet, telnet_event_t *ev,
 
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode
 {
-    NSLog(@"%s event<%lu> stream<%@>", __func__, (unsigned long)eventCode, aStream);
+    //NSLog(@"%s event<%lu> stream<%@>", __func__, (unsigned long)eventCode, aStream);
     
     if (aStream == self.outputStream) {
         switch (eventCode) {
@@ -255,7 +283,7 @@ static void _event_handler(telnet_t *telnet, telnet_event_t *ev,
                 if(len > 0) {
                     telnet_recv(telnet, buf, len);
                 } else {
-                    NSLog(@"no buffer! server disconnected");
+                    //NSLog(@"no buffer! server disconnected");
                     [self.outputStream close];
                     break;
                 }
@@ -277,12 +305,12 @@ static void _event_handler(telnet_t *telnet, telnet_event_t *ev,
 - (void)flushData:(NSData *)buffer
 {
     if (!buffer) {
-        NSLog(@"Error: nil buffer");
+        //NSLog(@"Error: nil buffer");
         return;
     }
     
     NSUInteger writed = [self.outputStream write:[buffer bytes] maxLength:[buffer length]];
-    NSLog(@"%@ send out <%lu> %@", self, writed, buffer);
+    //NSLog(@"%@ send out <%lu> %@", self, writed, buffer);
 }
 
 @end
