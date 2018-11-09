@@ -20,7 +20,7 @@
 
 @property (nonatomic, weak) id<TelnetDelegate> delegate;
 
-- (void)setup:(HostEntry *)entry;
+- (void)setup:(NSString *)hostName Port:(int)port;
 - (void)writeMessage:(NSString *)msg;
 
 @end

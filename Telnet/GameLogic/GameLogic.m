@@ -10,6 +10,11 @@
 
 @interface GameLogic()
 {
+    NSString *userName;
+    NSString *password;
+    bool justSendUserName;
+    bool justSendPassword;
+    bool userLogined;
     bool askingUserName;
     bool askingPassword;
     bool justSend;
@@ -23,6 +28,7 @@
 @end
 
 ANSIEscapeHelper *ansiEscapeHelper;
+TelnetClient *client;
 
 @implementation GameLogic
 
@@ -67,9 +73,16 @@ static GameLogic* _instance = nil;
                 [[ansiEscapeHelper ansiColors] setObject:thisColor forKey:[colorPrefDefaults objectForKey:thisPrefName]];
             }
         }
+
+        client = [[TelnetClient alloc] init];
+        client.delegate = _instance;
     }) ;
 
     return _instance ;
+}
+
+- (void)ConnectMudServer{
+    [client setup:@"47.90.49.49" Port:8080];
 }
 
 //^[\u4e00-\u9fa5]* - $
@@ -90,6 +103,28 @@ static GameLogic* _instance = nil;
     return result;
 }
 
+- (bool)checkUserExist:(NSString *) msg{
+    NSRange range = [msg rangeOfString:@"^此ID档案已存在，请输入密码：$" options:NSRegularExpressionSearch];
+    if (range.location != NSNotFound) {
+        return true;
+    }
+    return false;
+}
+
+- (bool)checkUserLogined:(NSString *) msg{
+    NSRange range = [msg rangeOfString:@"^用户权限" options:NSRegularExpressionSearch];
+    if (range.location != NSNotFound) {
+        return true;
+    }
+    else{
+        range = [msg rangeOfString:@"重新连线完毕。" options:NSRegularExpressionSearch];
+        if (range.location != NSNotFound) {
+            return true;
+        }
+    }
+    return false;
+}
+
 - (void)logSentMessage:(NSString *)msg{
     if ([msg isEqualToString:@"l"]) {
         justLook = true;
@@ -97,6 +132,23 @@ static GameLogic* _instance = nil;
     if ([[NSArray arrayWithObjects: @"e", @"s", @"w", @"n", @"ne", @"nw", @"se", @"sw", nil] containsObject:msg]) {
         justMove = true;
     }
+}
+
+- (void)loginWithUserNamePassword:(NSString *)inputUserName Password:(NSString *)inputPassword
+{
+    userName = inputUserName;
+    password = inputPassword;
+    [client writeMessage:[userName stringByAppendingString:@"\n"]];
+    justSendUserName = true;
+}
+
+- (void)login
+{
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    userName = [userDefaults objectForKey:@"userName"];
+    password = [userDefaults objectForKey:@"password"];
+    [client writeMessage:[userName stringByAppendingString:@"\n"]];
+    justSendUserName = true;
 }
 
 //此ID档案已存在，请输入密码：
@@ -109,12 +161,52 @@ static GameLogic* _instance = nil;
         NSLog(@"Mapinfo [\n%@\n]", cleanMsg);
         NSLog(@"地点名字:[\n%@\n]", [self getLocationName:cleanMsg]);
         justLook = false;
+        return attrStr;
     }
     if (justMove) {
         NSLog(@"Mapinfo [\n%@\n]", cleanMsg);
         justMove = false;
+        return attrStr;
+    }
+    if (justSendUserName) {
+        justSendUserName = false;
+        if ([self checkUserExist:cleanMsg]) {
+            [client writeMessage:[password stringByAppendingString:@"\n"]];
+            justSendPassword = true;
+        }
+        return attrStr;
+    }
+    if (justSendPassword) {
+        justSendPassword = false;
+        if ([self checkUserLogined:cleanMsg]) {
+            userLogined = true;
+            NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+            [userDefaults setObject:password forKey:@"password"];
+            [userDefaults setObject:userName forKey:@"userName"];
+            NSLog(@"%@", @"登录成功");
+        }
+        else{
+            NSLog(@"%@", @"登录失败");
+        }
+        return attrStr;
     }
     return attrStr;
+}
+
+#pragma mark - TelnetDelegate
+
+- (void)didReceiveMessage:(NSString *)msg
+{
+    NSAttributedString *attrStr = [self filterMessage:msg];
+    id gameLogicDelegate = self.delegate;
+    SEL sel = @selector(showMessage:);
+    void (*myObjCSelectorPointer)(id, SEL, NSAttributedString*)  = (void (*)(id,SEL,NSAttributedString*))[gameLogicDelegate methodForSelector:sel];
+    myObjCSelectorPointer(gameLogicDelegate, sel, attrStr);
+}
+
+- (void)shouldEcho:(BOOL)echo
+{
+    //NSLog(@"%s %d", __func__, echo);
 }
 
 @end

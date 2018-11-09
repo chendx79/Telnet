@@ -83,8 +83,8 @@ static void _display(id client, id telnetDelegate, const char *buffer, size_t si
 
     //收到消息后不马上处理，而是打开一个timer延时处理，防止后面有断包没有收完
     if (!timerStarted) {
-        void (*myObjCSelectorPointer2)(id, SEL, id)  = (void (*)(id,SEL, id))[client methodForSelector:@selector(startTimer:)];
-        myObjCSelectorPointer2(client, @selector(startTimer:), telnetDelegate);
+        void (*myObjCSelectorPointer)(id, SEL, id)  = (void (*)(id,SEL, id))[client methodForSelector:@selector(startTimer:)];
+        myObjCSelectorPointer(client, @selector(startTimer:), telnetDelegate);
     }
 }
 static void _doEcho(id telnetDelegate, int echo) {
@@ -197,12 +197,8 @@ static void _event_handler(telnet_t *telnet, telnet_event_t *ev,
     [self.outputStream open];
 }
 
-- (void)setup:(HostEntry *)entry
+- (void)setup:(NSString *)hostName Port:(int)port
 {
-    //NSLog(@"%s %@", __func__, entry);
-    hostName = entry.host;
-    port = entry.port.intValue;
-    
     CFHostRef host = CFHostCreateWithName(NULL, (__bridge CFStringRef _Nonnull)(hostName));
     CFReadStreamRef readStream;
     CFWriteStreamRef writeStream;

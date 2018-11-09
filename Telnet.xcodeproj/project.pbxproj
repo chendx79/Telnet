@@ -19,7 +19,7 @@
 		9362F3CD1E14F67100842C29 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9362F3CB1E14F67100842C29 /* Main.storyboard */; };
 		9362F3CF1E14F67100842C29 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9362F3CE1E14F67100842C29 /* Assets.xcassets */; };
 		9362F3D21E14F67100842C29 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9362F3D01E14F67100842C29 /* LaunchScreen.storyboard */; };
-		9362F3DD1E14F69400842C29 /* TelnetHostsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3DA1E14F69400842C29 /* TelnetHostsViewController.m */; };
+		9362F3DD1E14F69400842C29 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3DA1E14F69400842C29 /* LoginViewController.m */; };
 		9362F3DE1E14F69400842C29 /* TelnetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3DC1E14F69400842C29 /* TelnetViewController.m */; };
 		9362F3E31E14F6D400842C29 /* TelnetClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3E21E14F6D400842C29 /* TelnetClient.m */; };
 		9362F3EB1E14F75700842C29 /* HostsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3EA1E14F75700842C29 /* HostsDataSource.m */; };
@@ -51,8 +51,8 @@
 		9362F3CE1E14F67100842C29 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9362F3D11E14F67100842C29 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9362F3D31E14F67100842C29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9362F3D91E14F69400842C29 /* TelnetHostsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TelnetHostsViewController.h; sourceTree = "<group>"; };
-		9362F3DA1E14F69400842C29 /* TelnetHostsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TelnetHostsViewController.m; sourceTree = "<group>"; };
+		9362F3D91E14F69400842C29 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
+		9362F3DA1E14F69400842C29 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		9362F3DB1E14F69400842C29 /* TelnetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TelnetViewController.h; sourceTree = "<group>"; };
 		9362F3DC1E14F69400842C29 /* TelnetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TelnetViewController.m; sourceTree = "<group>"; };
 		9362F3E11E14F6D400842C29 /* TelnetClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TelnetClient.h; sourceTree = "<group>"; };
@@ -159,8 +159,8 @@
 		9362F3DF1E14F69B00842C29 /* VCs */ = {
 			isa = PBXGroup;
 			children = (
-				9362F3D91E14F69400842C29 /* TelnetHostsViewController.h */,
-				9362F3DA1E14F69400842C29 /* TelnetHostsViewController.m */,
+				9362F3D91E14F69400842C29 /* LoginViewController.h */,
+				9362F3DA1E14F69400842C29 /* LoginViewController.m */,
 				9362F3DB1E14F69400842C29 /* TelnetViewController.h */,
 				9362F3DC1E14F69400842C29 /* TelnetViewController.m */,
 			);
@@ -272,7 +272,7 @@
 				9362F3C71E14F67100842C29 /* AppDelegate.m in Sources */,
 				65E356EC2192C610004369FB /* NSLayoutConstraint+PureLayout.m in Sources */,
 				E753D2931E1B54F30096FBD7 /* README.md in Sources */,
-				9362F3DD1E14F69400842C29 /* TelnetHostsViewController.m in Sources */,
+				9362F3DD1E14F69400842C29 /* LoginViewController.m in Sources */,
 				65E356ED2192C610004369FB /* ALView+PureLayout.m in Sources */,
 				9362F3C41E14F67100842C29 /* main.m in Sources */,
 				9362F3EB1E14F75700842C29 /* HostsDataSource.m in Sources */,

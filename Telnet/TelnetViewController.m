@@ -88,7 +88,7 @@
 {
     //self.consoleView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
     
-    [self.client setup:self.hostEntry];
+    //[self.client setup:self.hostEntry];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -129,13 +129,8 @@
 }
 */
 
-- (void)appendText:(NSString *)msg
+- (void)appendText:(NSAttributedString *)msg
 {
-    if (msg == nil)
-        return;
-
-    NSAttributedString *attrStr = [[GameLogic shareInstance] filterMessage:msg];
-
     if (msg == nil)
         return;
 
@@ -145,7 +140,7 @@
 
         NSMutableAttributedString *fullTextAttributed = [[NSMutableAttributedString alloc] initWithAttributedString:weakSelf.consoleView.attributedText];
 
-        [fullTextAttributed appendAttributedString:attrStr];
+        [fullTextAttributed appendAttributedString:msg];
 
         weakSelf.consoleView.attributedText = fullTextAttributed;
         //
@@ -216,7 +211,7 @@
 
 #pragma mark - TelnetDelegate
 
-- (void)didReceiveMessage:(NSString *)msg
+- (void)didReceiveMessage:(NSAttributedString *)msg
 {
     [self appendText:msg];
 }
