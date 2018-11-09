@@ -1,19 +1,16 @@
 //
-//  TelnetViewController.m
-//  BryanYuan
+//  GameViewController.m
+//  陈鼎星
 //
-//  Created by Bryan Yuan on 28/12/2016.
-//  Copyright © 2016 Bryan Yuan. All rights reserved.
+//  Created by 陈鼎星 on 2018/11/9.
+//  Copyright © 2018 Chen DingXing. All rights reserved.
 //
 
-#import "TelnetViewController.h"
-#import "TelnetClient.h"
+#import "GameViewController.h"
 #import "PureLayout/PureLayout.h"
 #import "GameLogic/GameLogic.h"
 
-@interface TelnetViewController () <TelnetDelegate, UITextViewDelegate, UIScrollViewDelegate, UITextFieldDelegate>
-@property TelnetClient *client;
-@property BOOL doEcho;
+@interface GameViewController () <TelnetDelegate, GameLogicDelegate,UITextViewDelegate, UIScrollViewDelegate, UITextFieldDelegate>
 
 @property (nonatomic, assign) BOOL didSetupConstraints;
 @property (nonatomic, strong) UIView *mapView;
@@ -22,16 +19,13 @@
 
 @end
 
-@implementation TelnetViewController
+@implementation GameViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.title = self.hostEntry.host;
-    _client = [[TelnetClient alloc] init];
-    _client.delegate = self;
+    [GameLogic shareInstance].delegate = self;
     self.consoleView.delegate = self;
-    self.doEcho = YES;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navBack"]
                                                                              style:UIBarButtonItemStylePlain
                                                                             target:self
@@ -94,14 +88,13 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    self.client = nil;
 }
 
 - (void)confirmQuit
 {
     [self.consoleView resignFirstResponder];
     
-    __weak TelnetViewController *weakSelf = self;
+    __weak GameViewController *weakSelf = self;
     
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Terminate the session?"
                                                                    message:nil
@@ -134,7 +127,7 @@
     if (msg == nil)
         return;
 
-    __weak TelnetViewController *weakSelf = self;
+    __weak GameViewController *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
 
 
@@ -221,26 +214,21 @@
     //NSLog(@"%s %d", __func__, echo);
 }
 
-#pragma mark - UITextViewDelegate
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
-{
-    [self.client writeMessage:text];
-    const char * _char = [text cStringUsingEncoding:NSUTF8StringEncoding];
-    int isBackSpace = strcmp(_char, "\b");
-    
-    if (isBackSpace == -8) {
-        //NSLog(@"Backspace was pressed");
-        return YES;
-    }
-    return NO;
-}
-
+#pragma mark - UITextFieldDelegate
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
-    NSLog(@"%@", _commandField.text);
-    [self.client writeMessage:[_commandField.text stringByAppendingString:@"\n"]];
-    [[GameLogic shareInstance] logSentMessage:_commandField.text];
+    [[GameLogic shareInstance] sendMessage:_commandField.text];
     [_commandField selectAll:self];
     return YES;
+}
+
+#pragma mark - GameLogicDelegate
+- (void)showMessage:(NSAttributedString *)msg
+{
+    [self appendText:msg];
+}
+
+- (void)loginSuccessfully{
+
 }
 
 @end

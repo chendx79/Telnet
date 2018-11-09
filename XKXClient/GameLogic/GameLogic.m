@@ -1,9 +1,9 @@
 //
 //  GameLogic.m
-//  Telnet
+//  陈鼎星
 //
-//  Created by 陈鼎星 on 2018/11/8.
-//  Copyright © 2018 Bryan Yuan. All rights reserved.
+//  Created by 陈鼎星 on 8/11/2018.
+//  Copyright © 2018 陈鼎星. All rights reserved.
 //
 
 #import "GameLogic.h"
@@ -151,7 +151,10 @@ static GameLogic* _instance = nil;
     justSendUserName = true;
 }
 
-//此ID档案已存在，请输入密码：
+- (void)sendMessage:(NSString *)msg
+{
+    [client writeMessage:[msg stringByAppendingString:@"\n"]];
+}
 
 - (NSAttributedString *)filterMessage:(NSString *)msg{
     NSString * cleanMsg;
@@ -184,6 +187,12 @@ static GameLogic* _instance = nil;
             [userDefaults setObject:password forKey:@"password"];
             [userDefaults setObject:userName forKey:@"userName"];
             NSLog(@"%@", @"登录成功");
+
+            //打开游戏窗口
+            id gameLogicDelegate = self.delegate;
+            SEL sel = @selector(loginSuccessfully);
+            void (*myObjCSelectorPointer)(id, SEL)  = (void (*)(id,SEL))[gameLogicDelegate methodForSelector:sel];
+            myObjCSelectorPointer(gameLogicDelegate, sel);
         }
         else{
             NSLog(@"%@", @"登录失败");

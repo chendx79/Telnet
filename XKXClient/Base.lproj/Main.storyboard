@@ -28,10 +28,10 @@
             </objects>
             <point key="canvasLocation" x="1847.2" y="138.98050974512745"/>
         </scene>
-        <!--Telnet View Controller-->
+        <!--Game View Controller-->
         <scene sceneID="Z0l-eG-X4l">
             <objects>
-                <viewController storyboardIdentifier="telnetVC" id="HSA-Jj-Bve" customClass="TelnetViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="gameVC" id="HSA-Jj-Bve" customClass="GameViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="b4B-16-dtp"/>
                         <viewControllerLayoutGuide type="bottom" id="gio-g3-2eR"/>

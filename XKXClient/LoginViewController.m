@@ -1,5 +1,5 @@
 //
-//  TelnetHostsViewController.m
+//  LoginViewController.m
 //  Chen DingXing
 //
 //  Created by Chen DingXing on 09/11/2018.
@@ -7,8 +7,7 @@
 //
 
 #import "LoginViewController.h"
-#import "HostsDataSource.h"
-#import "TelnetViewController.h"
+#import "GameViewController.h"
 #import "GameLogic/GameLogic.h"
 
 @interface LoginViewController () <GameLogicDelegate, UITextFieldDelegate, UITextViewDelegate, UIScrollViewDelegate>
@@ -253,6 +252,12 @@
 - (void)showMessage:(NSAttributedString *)msg
 {
     [self appendText:msg];
+}
+
+- (void)loginSuccessfully{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    GameViewController *gameVC = [storyboard instantiateViewControllerWithIdentifier:@"gameVC"];
+    [self presentViewController:gameVC animated:YES completion:nil];
 }
 
 @end

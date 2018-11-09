@@ -20,9 +20,8 @@
 		9362F3CF1E14F67100842C29 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9362F3CE1E14F67100842C29 /* Assets.xcassets */; };
 		9362F3D21E14F67100842C29 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9362F3D01E14F67100842C29 /* LaunchScreen.storyboard */; };
 		9362F3DD1E14F69400842C29 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3DA1E14F69400842C29 /* LoginViewController.m */; };
-		9362F3DE1E14F69400842C29 /* TelnetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3DC1E14F69400842C29 /* TelnetViewController.m */; };
+		9362F3DE1E14F69400842C29 /* GameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3DC1E14F69400842C29 /* GameViewController.m */; };
 		9362F3E31E14F6D400842C29 /* TelnetClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3E21E14F6D400842C29 /* TelnetClient.m */; };
-		9362F3EB1E14F75700842C29 /* HostsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 9362F3EA1E14F75700842C29 /* HostsDataSource.m */; };
 		E753D2931E1B54F30096FBD7 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = E753D2921E1B54F30096FBD7 /* README.md */; };
 /* End PBXBuildFile section */
 
@@ -43,7 +42,7 @@
 		65E356EB2192C60F004369FB /* NSArray+PureLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+PureLayout.m"; sourceTree = "<group>"; };
 		65E356F2219401FC004369FB /* GameLogic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GameLogic.m; path = GameLogic/GameLogic.m; sourceTree = "<group>"; };
 		65E356F421940221004369FB /* GameLogic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GameLogic.h; path = GameLogic/GameLogic.h; sourceTree = "<group>"; };
-		9362F3BF1E14F67100842C29 /* Telnet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Telnet.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9362F3BF1E14F67100842C29 /* XKXClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XKXClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9362F3C31E14F67100842C29 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9362F3C51E14F67100842C29 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9362F3C61E14F67100842C29 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -53,13 +52,11 @@
 		9362F3D31E14F67100842C29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9362F3D91E14F69400842C29 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		9362F3DA1E14F69400842C29 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
-		9362F3DB1E14F69400842C29 /* TelnetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TelnetViewController.h; sourceTree = "<group>"; };
-		9362F3DC1E14F69400842C29 /* TelnetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TelnetViewController.m; sourceTree = "<group>"; };
+		9362F3DB1E14F69400842C29 /* GameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameViewController.h; sourceTree = "<group>"; };
+		9362F3DC1E14F69400842C29 /* GameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameViewController.m; sourceTree = "<group>"; };
 		9362F3E11E14F6D400842C29 /* TelnetClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TelnetClient.h; sourceTree = "<group>"; };
 		9362F3E21E14F6D400842C29 /* TelnetClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TelnetClient.m; sourceTree = "<group>"; };
 		9362F3E61E14F6FA00842C29 /* libtelnet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libtelnet.h; sourceTree = "<group>"; };
-		9362F3E91E14F75700842C29 /* HostsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HostsDataSource.h; sourceTree = "<group>"; };
-		9362F3EA1E14F75700842C29 /* HostsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HostsDataSource.m; sourceTree = "<group>"; };
 		E753D2921E1B54F30096FBD7 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -114,7 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				E753D2921E1B54F30096FBD7 /* README.md */,
-				9362F3C11E14F67100842C29 /* Telnet */,
+				9362F3C11E14F67100842C29 /* XKXClient */,
 				9362F3C01E14F67100842C29 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -122,12 +119,12 @@
 		9362F3C01E14F67100842C29 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9362F3BF1E14F67100842C29 /* Telnet.app */,
+				9362F3BF1E14F67100842C29 /* XKXClient.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		9362F3C11E14F67100842C29 /* Telnet */ = {
+		9362F3C11E14F67100842C29 /* XKXClient */ = {
 			isa = PBXGroup;
 			children = (
 				65E356F1219401BF004369FB /* Gamelogic */,
@@ -145,7 +142,7 @@
 				9362F3D31E14F67100842C29 /* Info.plist */,
 				9362F3C21E14F67100842C29 /* Supporting Files */,
 			);
-			path = Telnet;
+			path = XKXClient;
 			sourceTree = "<group>";
 		};
 		9362F3C21E14F67100842C29 /* Supporting Files */ = {
@@ -161,8 +158,8 @@
 			children = (
 				9362F3D91E14F69400842C29 /* LoginViewController.h */,
 				9362F3DA1E14F69400842C29 /* LoginViewController.m */,
-				9362F3DB1E14F69400842C29 /* TelnetViewController.h */,
-				9362F3DC1E14F69400842C29 /* TelnetViewController.m */,
+				9362F3DB1E14F69400842C29 /* GameViewController.h */,
+				9362F3DC1E14F69400842C29 /* GameViewController.m */,
 			);
 			name = VCs;
 			sourceTree = "<group>";
@@ -188,8 +185,6 @@
 		9362F3E81E14F74A00842C29 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				9362F3E91E14F75700842C29 /* HostsDataSource.h */,
-				9362F3EA1E14F75700842C29 /* HostsDataSource.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -197,9 +192,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		9362F3BE1E14F67100842C29 /* Telnet */ = {
+		9362F3BE1E14F67100842C29 /* XKXClient */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9362F3D61E14F67100842C29 /* Build configuration list for PBXNativeTarget "Telnet" */;
+			buildConfigurationList = 9362F3D61E14F67100842C29 /* Build configuration list for PBXNativeTarget "XKXClient" */;
 			buildPhases = (
 				9362F3BB1E14F67100842C29 /* Sources */,
 				9362F3BC1E14F67100842C29 /* Frameworks */,
@@ -209,9 +204,9 @@
 			);
 			dependencies = (
 			);
-			name = Telnet;
+			name = XKXClient;
 			productName = Telnet;
-			productReference = 9362F3BF1E14F67100842C29 /* Telnet.app */;
+			productReference = 9362F3BF1E14F67100842C29 /* XKXClient.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -229,7 +224,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 9362F3BA1E14F67100842C29 /* Build configuration list for PBXProject "Telnet" */;
+			buildConfigurationList = 9362F3BA1E14F67100842C29 /* Build configuration list for PBXProject "XKXClient" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -242,7 +237,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				9362F3BE1E14F67100842C29 /* Telnet */,
+				9362F3BE1E14F67100842C29 /* XKXClient */,
 			);
 		};
 /* End PBXProject section */
@@ -267,7 +262,7 @@
 			files = (
 				9362F3E31E14F6D400842C29 /* TelnetClient.m in Sources */,
 				65E356E1219021DE004369FB /* AnsiEscapeHelper.m in Sources */,
-				9362F3DE1E14F69400842C29 /* TelnetViewController.m in Sources */,
+				9362F3DE1E14F69400842C29 /* GameViewController.m in Sources */,
 				65E356F3219401FC004369FB /* GameLogic.m in Sources */,
 				9362F3C71E14F67100842C29 /* AppDelegate.m in Sources */,
 				65E356EC2192C610004369FB /* NSLayoutConstraint+PureLayout.m in Sources */,
@@ -275,7 +270,6 @@
 				9362F3DD1E14F69400842C29 /* LoginViewController.m in Sources */,
 				65E356ED2192C610004369FB /* ALView+PureLayout.m in Sources */,
 				9362F3C41E14F67100842C29 /* main.m in Sources */,
-				9362F3EB1E14F75700842C29 /* HostsDataSource.m in Sources */,
 				65E356DA21901E7F004369FB /* libtelnet.c in Sources */,
 				65E356EE2192C610004369FB /* NSArray+PureLayout.m in Sources */,
 				65E356E0219021DE004369FB /* UIColor+ANSI.m in Sources */,
@@ -413,14 +407,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = FQZ2R3UT9T;
-				INFOPLIST_FILE = Telnet/Info.plist;
+				INFOPLIST_FILE = XKXClient/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Telnet/libtelnet",
+					"$(PROJECT_DIR)/XKXClient/libtelnet",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = cn.unicoal.Telnet;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MoreDoDo.XKXClient;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -430,14 +424,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = FQZ2R3UT9T;
-				INFOPLIST_FILE = Telnet/Info.plist;
+				INFOPLIST_FILE = XKXClient/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Telnet/libtelnet",
+					"$(PROJECT_DIR)/XKXClient/libtelnet",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = cn.unicoal.Telnet;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MoreDoDo.XKXClient;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -445,7 +439,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		9362F3BA1E14F67100842C29 /* Build configuration list for PBXProject "Telnet" */ = {
+		9362F3BA1E14F67100842C29 /* Build configuration list for PBXProject "XKXClient" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9362F3D41E14F67100842C29 /* Debug */,
@@ -454,7 +448,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9362F3D61E14F67100842C29 /* Build configuration list for PBXNativeTarget "Telnet" */ = {
+		9362F3D61E14F67100842C29 /* Build configuration list for PBXNativeTarget "XKXClient" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9362F3D71E14F67100842C29 /* Debug */,

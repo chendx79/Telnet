@@ -1,9 +1,9 @@
 //
 //  main.m
-//  Telnet
+//  陈鼎星
 //
-//  Created by Bryan Yuan on 29/12/2016.
-//  Copyright © 2016 Bryan Yuan. All rights reserved.
+//  Created by 陈鼎星 on 9/11/2018.
+//  Copyright © 2018 陈鼎星. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
