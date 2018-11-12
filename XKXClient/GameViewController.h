@@ -9,5 +9,4 @@
 #import <UIKit/UIKit.h>
 
 @interface GameViewController : UIViewController
-@property IBOutlet UITextView *consoleView;
 @end

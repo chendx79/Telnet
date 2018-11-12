@@ -112,7 +112,7 @@ static GameLogic* _instance = nil;
 }
 
 - (bool)checkUserLogined:(NSString *) msg{
-    NSRange range = [msg rangeOfString:@"^用户权限" options:NSRegularExpressionSearch];
+    NSRange range = [msg rangeOfString:@"^目前权限" options:NSRegularExpressionSearch];
     if (range.location != NSNotFound) {
         return true;
     }

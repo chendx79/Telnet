@@ -31,7 +31,6 @@
     [GameLogic shareInstance].delegate = self;
 
     [self decorateUIs];
-    self.title = @"Telnet";
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -61,12 +60,12 @@
 {
     if (!self.didSetupConstraints) {
         [self.secondToolView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-        [self.secondToolView autoSetDimensionsToSize:CGSizeMake(200, 60)];
+        [self.secondToolView autoSetDimension:ALDimensionHeight toSize:60];
         [self.secondToolView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
         [self.secondToolView autoPinEdgeToSuperviewEdge:ALEdgeRight];
 
         [self.firstToolView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.secondToolView withOffset:-5];
-        [self.firstToolView autoSetDimensionsToSize:CGSizeMake(200, 60)];
+        [self.firstToolView autoSetDimension:ALDimensionHeight toSize:60];
         [self.firstToolView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
         [self.firstToolView autoPinEdgeToSuperviewEdge:ALEdgeRight];
 
