@@ -151,9 +151,9 @@ static GameLogic* _instance = nil;
     }
     if (justMove) {
         NSLog(@"Mapinfo [\n%@\n]", cleanMsg);
+        [self analyzeMapInfo:cleanMsg AttrStr:attrStr];
         justMove = false;
-        [self sendMessage:@"l"];
-        return attrStr;
+        return nil;
     }
     if (justSendUserName) {
         justSendUserName = false;
@@ -288,6 +288,14 @@ static GameLogic* _instance = nil;
     SEL sel = @selector(showLocation:);
     void (*myObjCSelectorPointer)(id, SEL, NSString*)  = (void (*)(id, SEL, NSString*))[gameLogicDelegate methodForSelector:sel];
     myObjCSelectorPointer(gameLogicDelegate, sel, locationButtonTitle);
+
+    //你来到了 。。。。
+    location = [[NSString alloc] initWithFormat:@"\r\n>你来到了 %@\r\n", location];
+    NSDictionary *locationDict = @{NSForegroundColorAttributeName:[UIColor greenColor]};
+    NSAttributedString *locationAttributed = [[NSAttributedString alloc]initWithString:location attributes:locationDict];
+    SEL locationSelector = @selector(showMessage:);
+    void (*locationPointer)(id, SEL, NSAttributedString*)  = (void (*)(id,SEL,NSAttributedString*))[gameLogicDelegate methodForSelector:locationSelector];
+    locationPointer(gameLogicDelegate, sel, locationAttributed);
 }
 
 #pragma mark - TelnetDelegate
