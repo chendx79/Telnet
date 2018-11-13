@@ -8,5 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface GameViewController : UIViewController
+@interface GameViewController : UIViewController{
+    UIButton* toolButtons[3][6];
+    UIView* toolButtonView[3];
+    NSMutableArray *directionButtons;
+    NSMutableArray *itemsButtons;
+}
 @end

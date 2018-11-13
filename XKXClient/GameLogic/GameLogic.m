@@ -85,24 +85,6 @@ static GameLogic* _instance = nil;
     [client setup:@"47.90.49.49" Port:8080];
 }
 
-//^[\u4e00-\u9fa5]* - $
-
-- (NSString *)getLocationName:(NSString *) msg{
-    NSString *result;
-    NSArray *lines = [msg componentsSeparatedByString:@"\r\n"];
-    for (int line = 0; line < [lines count]; line = line + 1) {
-        NSString *lineString = [lines objectAtIndex:line];
-        NSRange range = [lineString rangeOfString:@"^[\u4e00-\u9fa5]* - $" options:NSRegularExpressionSearch];
-        if (range.location != NSNotFound) {
-            NSRange nameRange = [lineString rangeOfString:@"^[\u4e00-\u9fa5]*" options:NSRegularExpressionSearch];
-            result = [lineString substringWithRange:nameRange];
-            NSLog(@"%@", result);
-            break;
-        }
-    }
-    return result;
-}
-
 - (bool)checkUserExist:(NSString *) msg{
     NSRange range = [msg rangeOfString:@"^此ID档案已存在，请输入密码：$" options:NSRegularExpressionSearch];
     if (range.location != NSNotFound) {
@@ -129,7 +111,7 @@ static GameLogic* _instance = nil;
     if ([msg isEqualToString:@"l"]) {
         justLook = true;
     }
-    if ([[NSArray arrayWithObjects: @"e", @"s", @"w", @"n", @"ne", @"nw", @"se", @"sw", nil] containsObject:msg]) {
+    if ([[NSArray arrayWithObjects: @"e", @"s", @"w", @"n", @"ne", @"nw", @"se", @"sw", @"east", @"south", @"west", @"north", @"northeast", @"northwest", @"southeast", @"southwest", nil] containsObject:msg]) {
         justMove = true;
     }
 }
@@ -153,6 +135,7 @@ static GameLogic* _instance = nil;
 
 - (void)sendMessage:(NSString *)msg
 {
+    [self logSentMessage:msg];
     [client writeMessage:[msg stringByAppendingString:@"\n"]];
 }
 
@@ -162,13 +145,14 @@ static GameLogic* _instance = nil;
     //NSLog(@"Got %lu string [%@]", [cleanMsg length], cleanMsg);
     if (justLook) {
         NSLog(@"Mapinfo [\n%@\n]", cleanMsg);
-        NSLog(@"地点名字:[\n%@\n]", [self getLocationName:cleanMsg]);
+        [self analyzeMapInfo:cleanMsg AttrStr:attrStr];
         justLook = false;
-        return attrStr;
+        return nil;
     }
     if (justMove) {
         NSLog(@"Mapinfo [\n%@\n]", cleanMsg);
         justMove = false;
+        [self sendMessage:@"l"];
         return attrStr;
     }
     if (justSendUserName) {
@@ -200,6 +184,110 @@ static GameLogic* _instance = nil;
         return attrStr;
     }
     return attrStr;
+}
+
+- (void)analyzeMapInfo:(NSString*)cleanMsg AttrStr:(NSAttributedString *)attrStr{
+    //获取地名
+    NSArray *lines = [cleanMsg componentsSeparatedByString:@"\r\n"];
+    NSString *location;
+    NSString *lookString;
+    NSString *directionString;
+    NSString *map;
+    NSString *locationDscrp;
+    NSMutableArray *itemsArray = [[NSMutableArray alloc] init];
+    bool locationFound = false;
+    bool mapFound = false;
+    bool locationDscrpFound = false;
+    for (int line = 0; line < [lines count]; line = line + 1) {
+        NSString *lineString = [lines objectAtIndex:line];
+        if ([[lineString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""]) {
+            continue;
+        }
+
+        if (!locationFound) {
+            NSRange range = [lineString rangeOfString:@"^[\u4e00-\u9fa5]* - $" options:NSRegularExpressionSearch];
+            if (range.location != NSNotFound) {
+                NSRange nameRange = [lineString rangeOfString:@"^[\u4e00-\u9fa5]*" options:NSRegularExpressionSearch];
+                location = [lineString substringWithRange:nameRange];
+                locationFound = true;
+                mapFound = true;
+                continue;
+            } else{
+                if (!mapFound) {
+                    if ((map == nil) || [map isEqualToString:@""]) {
+                        map = [[[NSString alloc] init] stringByAppendingString:lineString];
+                    } else {
+                        map = [map stringByAppendingFormat:@"\r\n%@", lineString];
+                    }
+                    continue;
+                }
+            }
+        }
+        else{
+            NSRange lookRange = [lineString rangeOfString:@"^    你可以看看" options:NSRegularExpressionSearch];
+            if (lookRange.location != NSNotFound) {
+                lookString = lineString;
+                locationDscrpFound = true;
+                continue;
+            }
+            NSRange directionRange = [lineString rangeOfString:@"^    这里[\u4e00-\u9fa5]*的方向有" options:NSRegularExpressionSearch];
+            if (directionRange.location != NSNotFound) {
+                directionString = lineString;
+                locationDscrpFound = true;
+
+                //处理方向字符串，增加按钮 [a-zA-Z]+
+                NSMutableArray *directionArray = [[NSMutableArray alloc] init];
+                NSRange directionRange = [directionString rangeOfString:@"[a-zA-Z]+" options:NSRegularExpressionSearch];
+                while (directionRange.location != NSNotFound) {
+                    [directionArray addObject:[directionString substringWithRange:directionRange]];
+                    directionRange = [directionString rangeOfString:@"[a-zA-Z]+" options:NSRegularExpressionSearch range:NSMakeRange(directionRange.location + directionRange.length, [directionString length] - directionRange.location - directionRange.length)];
+                }
+                id gameLogicDelegate = self.delegate;
+                SEL changeDirectionSelector = @selector(changeDirectionButtons:);
+                void (*changeDirectionPointer)(id, SEL, NSArray*)  = (void (*)(id, SEL, NSArray*))[gameLogicDelegate methodForSelector:changeDirectionSelector];
+                changeDirectionPointer(gameLogicDelegate, changeDirectionSelector, directionArray);
+
+                continue;
+            }
+            if (!locationDscrpFound) {
+                if ((locationDscrp == nil) || [locationDscrp isEqualToString:@""]) {
+                    locationDscrp = [[[NSString alloc] init] stringByAppendingString:lineString];
+                } else {
+                    locationDscrp = [locationDscrp stringByAppendingFormat:@"\r\n%@", lineString];
+                }
+            } else {
+                NSString *cleanStr = [lineString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                NSRange leftBracketRange = [cleanStr rangeOfString:@"("];
+                NSRange rightBracketRange = [cleanStr rangeOfString:@")"];
+                if (leftBracketRange.location != NSNotFound && rightBracketRange.location != NSNotFound) {
+                    NSRange itemDscrpRange = [cleanMsg rangeOfString:[cleanStr substringWithRange:NSMakeRange(0, leftBracketRange.location)]];
+                    NSAttributedString *itemDscrpAttributed = [attrStr attributedSubstringFromRange:itemDscrpRange];
+
+                    [itemsArray addObject:[NSDictionary dictionaryWithObjectsAndKeys:itemDscrpAttributed, @"name", [cleanStr substringWithRange:NSMakeRange(leftBracketRange.location + 1, rightBracketRange.location - leftBracketRange.location - 1)], @"id" , nil] ];
+                }
+            }
+        }
+    }
+
+    NSRange locationDscrpRange = [cleanMsg rangeOfString:locationDscrp];
+    NSAttributedString *locationDscrpAttributed = [attrStr attributedSubstringFromRange:locationDscrpRange];
+
+    //显示地点描述
+    id gameLogicDelegate = self.delegate;
+    SEL showLocationDescriptionSelector = @selector(showLocationDescription:);
+    void (*showLocationDescriptionPointer)(id, SEL, NSAttributedString*)  = (void (*)(id, SEL, NSAttributedString*))[gameLogicDelegate methodForSelector:showLocationDescriptionSelector];
+    showLocationDescriptionPointer(gameLogicDelegate, showLocationDescriptionSelector, locationDscrpAttributed);
+
+    //增加物品按钮
+    SEL changeItemSelector = @selector(changeItemsButtons:);
+    void (*changeItemPointer)(id, SEL, NSArray*)  = (void (*)(id, SEL, NSArray*))[gameLogicDelegate methodForSelector:changeItemSelector];
+    changeItemPointer(gameLogicDelegate, changeItemSelector, itemsArray);
+
+    //显示地名
+    NSString *locationButtonTitle = [[NSString alloc] initWithFormat:@"[%@]", location];
+    SEL sel = @selector(showLocation:);
+    void (*myObjCSelectorPointer)(id, SEL, NSString*)  = (void (*)(id, SEL, NSString*))[gameLogicDelegate methodForSelector:sel];
+    myObjCSelectorPointer(gameLogicDelegate, sel, locationButtonTitle);
 }
 
 #pragma mark - TelnetDelegate

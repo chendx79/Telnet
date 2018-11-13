@@ -17,10 +17,11 @@
 @property (nonatomic, strong) UIButton *locationButton;
 @property (nonatomic, strong) UIButton *mapButton;
 @property (nonatomic, strong) UITextView *locationTextView;
-@property (nonatomic, strong) UIView *toolView;
+@property (nonatomic, strong) UIView *textFieldView;
 @property (nonatomic, strong) UITextField *commandField;
 @property (nonatomic, strong) UITextView *messageTextView;
-//@property (nonatomic, strong) IBOutletCollection(UIButton) NSArray* toolButtons;
+@property (nonatomic, strong) UIView *directionView;
+@property (nonatomic, strong) UIView *itemsView;
 
 @end
 
@@ -31,22 +32,47 @@
     // Do any additional setup after loading the view.
     [GameLogic shareInstance].delegate = self;
     self.messageTextView.delegate = self;
-    
-    //[self.messageTextView setFrame:self.view.bounds];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeSize:) name:UIKeyboardDidShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidChangeSize:) name:UIKeyboardDidHideNotification object:nil];
+    self.messageTextView.editable = false;
+    self.messageTextView.selectable = false;
+    self.messageTextView.userInteractionEnabled = true;
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(messageTextViewTap:)];
+    [self.messageTextView addGestureRecognizer:tap];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeSize:) name:UIKeyboardDidShowNotification object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidChangeSize:) name:UIKeyboardDidHideNotification object:nil];
+
+    [self.view setBackgroundColor:[UIColor blackColor]];
     [self.view addSubview:self.mapToolView];//地图按钮栏
     [self.mapToolView addSubview:self.locationButton];//地名按钮
     [self.mapToolView addSubview:self.mapButton];//地图按钮
 
+    for(int row = 0; row < 3; row++)
+    {
+        toolButtonView[row] = [[UIView alloc] init];
+        [self.view addSubview:toolButtonView[row]];
+        for(int col = 0; col < 6; col++)
+        {
+            toolButtons[row][col] = [[UIButton alloc] init];
+            [[toolButtons[row][col] titleLabel]setFont:[UIFont systemFontOfSize: 12.0]];
+            [toolButtons[row][col] setTitle:@"自定义按钮" forState:UIControlStateNormal];
+            [toolButtons[row][col] setBackgroundColor:[UIColor darkGrayColor]];
+            [toolButtonView[row] addSubview:toolButtons[row][col]];
+        }
+    }
+
+    directionButtons = [[NSMutableArray alloc] init];
+    itemsButtons = [[NSMutableArray alloc] init];
+
     [self.view addSubview:self.locationTextView];//地图信息栏
+    [self.view addSubview:self.directionView];//方向按钮栏
+    [self.view addSubview:self.itemsView];//方向按钮栏
     [self.view addSubview:self.messageTextView];//游戏消息栏
-    [self.view addSubview:self.toolView];//游戏按钮栏
+    [self.view addSubview:self.textFieldView];//游戏按钮栏
     self.commandField.delegate = self;
-    [self.toolView addSubview:self.commandField];//命令输入栏
+    [self.textFieldView addSubview:self.commandField];//命令输入栏
     [self.view setNeedsUpdateConstraints];
+
+    [[GameLogic shareInstance] sendMessage:@"l"];
 }
 
 - (void) updateViewConstraints
@@ -70,17 +96,43 @@
         [self.locationTextView autoPinEdgeToSuperviewEdge:ALEdgeRight];
         [self.locationTextView autoSetDimension:ALDimensionHeight toSize:100.0];
 
-        [self.toolView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-        [self.toolView autoSetDimension:ALDimensionHeight toSize:330.0];
-        [self.toolView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
-        [self.toolView autoPinEdgeToSuperviewEdge:ALEdgeRight];
+        [self.directionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.locationTextView];
+        [self.directionView autoSetDimension:ALDimensionHeight toSize:34.0];
+        [self.directionView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+        [self.directionView autoPinEdgeToSuperviewEdge:ALEdgeRight];
 
-        [self.messageTextView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.locationTextView];
-        [self.messageTextView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.toolView];
-        [self.messageTextView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+        for(int row = 0; row < 3; row++)
+        {
+            if (row == 0) {
+                [toolButtonView[row] autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view.superview withOffset:-20];
+            } else {
+                [toolButtonView[row] autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:toolButtonView[row-1]];
+            }
+
+            [toolButtonView[row] autoSetDimension:ALDimensionHeight toSize:61.0];
+            [toolButtonView[row] autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+            [toolButtonView[row] autoPinEdgeToSuperviewEdge:ALEdgeRight];
+            NSArray *buttonsFirstLine = @[toolButtons[row][0], toolButtons[row][1], toolButtons[row][2], toolButtons[row][3], toolButtons[row][4], toolButtons[row][5]];
+            [buttonsFirstLine autoSetViewsDimension:ALDimensionHeight toSize:60.0];
+            [buttonsFirstLine autoDistributeViewsAlongAxis:ALAxisHorizontal alignedTo:ALAttributeHorizontal withFixedSpacing:1.0 insetSpacing:YES matchedSizes:YES];
+        }
+
+        [self.textFieldView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:toolButtonView[2]];
+        [self.textFieldView autoSetDimension:ALDimensionHeight toSize:34.0];
+        [self.textFieldView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+        [self.textFieldView autoPinEdgeToSuperviewEdge:ALEdgeRight];
+
+        [self.itemsView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.directionView];
+        [self.itemsView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.textFieldView];
+        [self.itemsView autoSetDimension:ALDimensionWidth toSize:60.0];
+        [self.itemsView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+
+        [self.messageTextView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.directionView];
+        [self.messageTextView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.textFieldView];
+        [self.messageTextView autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.itemsView];
         [self.messageTextView autoPinEdgeToSuperviewEdge:ALEdgeRight];
 
-        [self.commandField autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.toolView withOffset:50];
+        [self.commandField autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.textFieldView withOffset:2];
         [self.commandField autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:20];
         [self.commandField autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:20];
         [self.commandField autoSetDimension:ALDimensionHeight toSize:30];
@@ -130,16 +182,6 @@
     [self presentViewController:alert animated:YES completion:nil];
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
-
 - (void)appendText:(NSAttributedString *)msg
 {
     if (msg == nil)
@@ -165,30 +207,35 @@
 
 }
 
+#pragma mark - UITextViewEvent
+
+- (void)messageTextViewTap:(NSNotification *)notification
+{
+    [self.textFieldView autoSetDimension:ALDimensionHeight toSize:34.0];
+    [_commandField resignFirstResponder];
+}
+
 #pragma mark - UIKeyboardEvent
 
 - (void)keyboardWillChangeSize:(NSNotification *)notification
 {
-    return;
-    //NSLog(@"%s", __func__);
-    NSDictionary *info = notification.userInfo;
-    
-    CGRect r = [info[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    //NSLog(@"keyboard %@", NSStringFromCGRect(r));
-    
-    CGRect oriBound = self.messageTextView.bounds;
-    [self.messageTextView setBounds:CGRectMake(0, 0, oriBound.size.width, oriBound.size.height-r.size.height)];
-    [self.messageTextView setCenter:CGPointMake(self.messageTextView.bounds.size.width/2.0, self.messageTextView.bounds.size.height/2.0)];
-    [self.messageTextView setNeedsLayout];
+    NSLog(@"%@", @"keyboardWillChangeSize");
+//    NSDictionary *info = notification.userInfo;
+//
+//    CGRect r = [info[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+//    [self.textFieldView autoSetDimension:ALDimensionHeight toSize:200.0];
 }
 
-- (void)keyboardDidChangeSize:(NSNotification *)notification
+//组件初始化
+
+- (UIView *)itemsView
 {
-    return;
-    //NSLog(@"%s", __func__);
-    
-    [self.messageTextView setBounds:self.view.bounds];
-    [self.messageTextView setCenter:self.view.center];
+    if (!_itemsView) {
+        _itemsView = [UITextView newAutoLayoutView];
+        _itemsView.userInteractionEnabled = true;
+        _itemsView.backgroundColor = [UIColor blackColor];
+    }
+    return _itemsView;
 }
 
 - (UITextView *)messageTextView
@@ -217,7 +264,7 @@
         _locationButton = [UIButton newAutoLayoutView];
         [_locationButton setTitleColor:[UIColor yellowColor] forState:UIControlStateNormal];
         [[_locationButton titleLabel] setFont:[UIFont systemFontOfSize: 12.0]];
-        [_locationButton setBackgroundColor:[UIColor darkGrayColor]];
+        [_locationButton setBackgroundColor:[UIColor blackColor]];
         [_locationButton setTitle:@"地名" forState:UIControlStateNormal];
     }
     return _locationButton;
@@ -229,7 +276,7 @@
         _mapButton = [UIButton newAutoLayoutView];
         [_mapButton setTitleColor:[UIColor yellowColor] forState:UIControlStateNormal];
         [[_mapButton titleLabel] setFont:[UIFont systemFontOfSize: 12.0]];
-        [_mapButton setBackgroundColor:[UIColor darkGrayColor]];
+        [_mapButton setBackgroundColor:[UIColor blackColor]];
         [_mapButton setTitle:@"地图" forState:UIControlStateNormal];
     }
     return _mapButton;
@@ -239,18 +286,18 @@
 {
     if (!_locationTextView) {
         _locationTextView = [UITextView newAutoLayoutView];
-        _locationTextView.backgroundColor = [UIColor darkGrayColor];
+        _locationTextView.backgroundColor = [UIColor blackColor];
     }
     return _locationTextView;
 }
 
-- (UIView *)toolView
+- (UIView *)textFieldView
 {
-    if (!_toolView) {
-        _toolView = [UIView newAutoLayoutView];
-        _toolView.backgroundColor = [UIColor grayColor];
+    if (!_textFieldView) {
+        _textFieldView = [UIView newAutoLayoutView];
+        _textFieldView.backgroundColor = [UIColor grayColor];
     }
-    return _toolView;
+    return _textFieldView;
 }
 
 - (UITextField *)commandField
@@ -262,6 +309,20 @@
         [_commandField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
     }
     return _commandField;
+}
+
+- (UIView *)directionView
+{
+    if (!_directionView) {
+        _directionView = [UIView newAutoLayoutView];
+        _directionView.backgroundColor = [UIColor blackColor];
+    }
+    return _directionView;
+}
+
+- (void)walk:(UIButton *)sender {
+    NSString *direction = sender.titleLabel.text;
+    [[GameLogic shareInstance] sendMessage:direction];
 }
 
 #pragma mark - TelnetDelegate
@@ -291,6 +352,66 @@
 
 - (void)loginSuccessfully{
 
+}
+
+- (void)showLocation:(NSString *)locationName{
+    [self.locationButton setTitle:locationName forState:UIControlStateNormal];
+}
+
+- (void)showLocationDescription:(NSAttributedString *)locationDescription{
+    self.locationTextView.attributedText = locationDescription;
+}
+
+- (void)changeDirectionButtons:(NSArray *)directions{
+    if ([directionButtons count] > 0) {
+        for(int i = [directionButtons count] - 1; i >= 0; --i)
+        {
+            UIButton *button = directionButtons[i];
+            [directionButtons removeObject:button];
+            [button removeFromSuperview];
+        }
+    }
+
+    for(int i = 0; i < [directions count]; i++)
+    {
+        UIButton *directionButton = [[UIButton alloc] init];
+        [[directionButton titleLabel]setFont:[UIFont systemFontOfSize: 12.0]];
+        [directionButton setBackgroundColor:[UIColor darkGrayColor]];
+        [directionButton setTitle:directions[i] forState:UIControlStateNormal];
+        [directionButton setTitleColor:[UIColor greenColor] forState:UIControlStateNormal];
+        [directionButton setFrame:CGRectMake(2 + 52 * i, 2, 50, 30)];
+        [directionButton addTarget:self action:@selector(walk:) forControlEvents:UIControlEventTouchUpInside];
+
+        [self.directionView addSubview:directionButton];
+        [directionButtons addObject:directionButton];
+    }
+    NSLog(@"button added~~~~~~~~~~~~~~~~~~~~~~~~");
+}
+
+- (void)changeItemsButtons:(NSArray *)items{
+    if ([itemsButtons count] > 0) {
+        for(int i = [itemsButtons count] - 1; i >= 0; --i)
+        {
+            UITextView *button = itemsButtons[i];
+            [itemsButtons removeObject:button];
+            [button removeFromSuperview];
+        }
+    }
+
+    for(int i = 0; i < [items count]; i++)
+    {
+        NSAttributedString *attrTitle = [(NSDictionary *)items[i] objectForKey:@"name"];
+        UITextView *itemButton = [[UITextView alloc] init];
+        itemButton.attributedText = attrTitle;
+        //[itemButton setAttributedTitle:attrTitle forState:UIControlStateNormal];
+        //[itemButton setTitle:@"测试" forState:UIControlStateNormal];
+        [itemButton setBackgroundColor:[UIColor darkGrayColor]];
+        [itemButton setFrame:CGRectMake(1, 1 + 61 * i, 60, 60)];
+
+        [self.itemsView addSubview:itemButton];
+        [itemsButtons addObject:itemButton];
+    }
+    NSLog(@"items added~~~~~~~~~~~~~~~~~~~~~~~~");
 }
 
 @end

@@ -14,6 +14,10 @@
 
 - (void)showMessage:(NSAttributedString *)msg;
 - (void)loginSuccessfully;
+- (void)showLocation:(NSString *)locationName;
+- (void)showLocationDescription:(NSAttributedString *)locationDescription;
+- (void)changeDirectionButtons:(NSArray *)directions;
+- (void)changeItemsButtons:(NSArray *)items;
 
 @end
 
@@ -23,7 +27,6 @@
 
 +(instancetype) shareInstance;
 - (void)ConnectMudServer;
-- (NSString *)getLocationName:(NSString *) msg;
 - (void)logSentMessage:(NSString *)msg;
 - (NSAttributedString *)filterMessage:(NSString *)msg;
 - (void)loginWithUserNamePassword:(NSString *)inputUserName Password:(NSString *)inputPassword;

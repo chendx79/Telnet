@@ -42,14 +42,12 @@ static void _send(id client, const char *buffer, size_t size) {
 
 - (void)startTimer:(id)telnetDelegate{
     timerStarted = true;
-    //暂时是设置的300ms的延时处理，后续可以调整
-    NSTimer *timer = [NSTimer timerWithTimeInterval:0.3 target:self selector:@selector(action:) userInfo:telnetDelegate repeats:NO];
+    //暂时是设置的100ms的延时处理，后续可以调整
+    NSTimer *timer = [NSTimer timerWithTimeInterval:0.1 target:self selector:@selector(action:) userInfo:telnetDelegate repeats:NO];
     [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
 }
 
 - (void)action:(NSTimer *)sender{
-    NSLog(@"NSTimer: -------------------------------------------------");
-
     NSStringEncoding gbkEncoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
     NSString *msg = [[NSString alloc] initWithData:recBuf encoding:gbkEncoding];
     if (msg == nil)
@@ -68,6 +66,7 @@ static void _send(id client, const char *buffer, size_t size) {
     [recBuf setLength:0];
     
     timerStarted = false;
+    NSLog(@"NSTimer: %@", msg);
 }
 
 static void _display(id client, id telnetDelegate, const char *buffer, size_t size) {

@@ -207,7 +207,7 @@
 
 }
 
-- (IBAction)enterGame:(UIButton *)sender {
+- (void)enterGame:(UIButton *)sender {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     NSString *userName = [userDefaults objectForKey:@"userName"];
     if (userName != nil) {
