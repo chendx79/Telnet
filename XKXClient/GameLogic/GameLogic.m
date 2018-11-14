@@ -94,7 +94,7 @@ static GameLogic* _instance = nil;
 }
 
 - (bool)checkUserLogined:(NSString *) msg{
-    NSRange range = [msg rangeOfString:@"^目前权限" options:NSRegularExpressionSearch];
+    NSRange range = [msg rangeOfString:@"目前权限" options:NSRegularExpressionSearch];
     if (range.location != NSNotFound) {
         return true;
     }
@@ -144,15 +144,17 @@ static GameLogic* _instance = nil;
     NSAttributedString *attrStr = [ansiEscapeHelper attributedStringWithANSIEscapedString:msg cleanString:&cleanMsg];
     //NSLog(@"Got %lu string [%@]", [cleanMsg length], cleanMsg);
     if (justLook) {
-        NSLog(@"Mapinfo [\n%@\n]", cleanMsg);
-        [self analyzeMapInfo:cleanMsg AttrStr:attrStr];
-        justLook = false;
+        if ([self analyzeMapInfo:cleanMsg AttrStr:attrStr]) {
+            NSLog(@"Mapinfo [\n%@\n]", cleanMsg);
+            justLook = false;
+        }
         return nil;
     }
     if (justMove) {
-        NSLog(@"Mapinfo [\n%@\n]", cleanMsg);
-        [self analyzeMapInfo:cleanMsg AttrStr:attrStr];
-        justMove = false;
+        if ([self analyzeMapInfo:cleanMsg AttrStr:attrStr]) {
+            NSLog(@"Mapinfo [\n%@\n]", cleanMsg);
+            justMove = false;
+        }
         return nil;
     }
     if (justSendUserName) {
@@ -186,7 +188,7 @@ static GameLogic* _instance = nil;
     return attrStr;
 }
 
-- (void)analyzeMapInfo:(NSString*)cleanMsg AttrStr:(NSAttributedString *)attrStr{
+- (bool)analyzeMapInfo:(NSString*)cleanMsg AttrStr:(NSAttributedString *)attrStr{
     //获取地名
     NSArray *lines = [cleanMsg componentsSeparatedByString:@"\r\n"];
     NSString *location;
@@ -200,9 +202,9 @@ static GameLogic* _instance = nil;
     bool locationDscrpFound = false;
     for (int line = 0; line < [lines count]; line = line + 1) {
         NSString *lineString = [lines objectAtIndex:line];
-        if ([[lineString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""]) {
-            continue;
-        }
+//        if ([[lineString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""]) {
+//            continue;
+//        }
 
         if (!locationFound) {
             NSRange range = [lineString rangeOfString:@"^[\u4e00-\u9fa5]* - $" options:NSRegularExpressionSearch];
@@ -269,6 +271,10 @@ static GameLogic* _instance = nil;
         }
     }
 
+    if (locationDscrp == nil) {
+        return false;
+    }
+
     NSRange locationDscrpRange = [cleanMsg rangeOfString:locationDscrp];
     NSAttributedString *locationDscrpAttributed = [attrStr attributedSubstringFromRange:locationDscrpRange];
 
@@ -296,6 +302,8 @@ static GameLogic* _instance = nil;
     SEL locationSelector = @selector(showMessage:);
     void (*locationPointer)(id, SEL, NSAttributedString*)  = (void (*)(id,SEL,NSAttributedString*))[gameLogicDelegate methodForSelector:locationSelector];
     locationPointer(gameLogicDelegate, sel, locationAttributed);
+
+    return true;
 }
 
 #pragma mark - TelnetDelegate

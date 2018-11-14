@@ -9,6 +9,8 @@
 #import "GameViewController.h"
 #import "PureLayout/PureLayout.h"
 #import "GameLogic/GameLogic.h"
+#import "MyAttributedButton/MyAttributedButton.h"
+#import "DTCoreText.h"
 
 @interface GameViewController () <TelnetDelegate, GameLogicDelegate,UITextViewDelegate, UIScrollViewDelegate, UITextFieldDelegate>
 
@@ -19,7 +21,7 @@
 @property (nonatomic, strong) UITextView *locationTextView;
 @property (nonatomic, strong) UIView *textFieldView;
 @property (nonatomic, strong) UITextField *commandField;
-@property (nonatomic, strong) UITextView *messageTextView;
+@property (nonatomic, strong) DTAttributedTextView *messageTextView;
 @property (nonatomic, strong) UIView *directionView;
 @property (nonatomic, strong) UIView *itemsView;
 
@@ -32,8 +34,6 @@
     // Do any additional setup after loading the view.
     [GameLogic shareInstance].delegate = self;
     self.messageTextView.delegate = self;
-    self.messageTextView.editable = false;
-    self.messageTextView.selectable = false;
     self.messageTextView.userInteractionEnabled = true;
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(messageTextViewTap:)];
     [self.messageTextView addGestureRecognizer:tap];
@@ -189,20 +189,20 @@
 
     __weak GameViewController *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-
-
-        NSMutableAttributedString *fullTextAttributed = [[NSMutableAttributedString alloc] initWithAttributedString:weakSelf.messageTextView.attributedText];
+        NSAttributedString *attrString = weakSelf.messageTextView.attributedString;
+        NSMutableAttributedString *fullTextAttributed = [[NSMutableAttributedString alloc] initWithAttributedString:attrString];
 
         [fullTextAttributed appendAttributedString:msg];
 
-        weakSelf.messageTextView.attributedText = fullTextAttributed;
+        weakSelf.messageTextView.attributedString = fullTextAttributed;
         //
 
         //[weakSelf.messageTextView insertText:msg];
         [weakSelf.messageTextView setNeedsDisplay];
-        
-        NSRange visibleRange = NSMakeRange(weakSelf.messageTextView.text.length-2, 1);
-        [weakSelf.messageTextView scrollRangeToVisible:visibleRange];
+        if (weakSelf.messageTextView.contentSize.height > weakSelf.messageTextView.bounds.size.height) {
+            CGPoint bottomOffset = CGPointMake(0, weakSelf.messageTextView.contentSize.height - weakSelf.messageTextView.bounds.size.height);
+            [weakSelf.messageTextView setContentOffset:bottomOffset animated:YES];
+        }
     });
 
 }
@@ -211,7 +211,6 @@
 
 - (void)messageTextViewTap:(NSNotification *)notification
 {
-    [self.textFieldView autoSetDimension:ALDimensionHeight toSize:34.0];
     [_commandField resignFirstResponder];
 }
 
@@ -238,12 +237,13 @@
     return _itemsView;
 }
 
-- (UITextView *)messageTextView
+- (DTAttributedTextView *)messageTextView
 {
     if (!_messageTextView) {
-        _messageTextView = [UITextView newAutoLayoutView];
+        _messageTextView = [DTAttributedTextView newAutoLayoutView];
         _messageTextView.userInteractionEnabled = true;
         _messageTextView.scrollEnabled = true;
+        //_messageTextView.contentInset = UIEdgeInsetsMake(0, 5, 0, 0);
         _messageTextView.backgroundColor = [UIColor blackColor];
     }
     return _messageTextView;
@@ -392,7 +392,7 @@
     if ([itemsButtons count] > 0) {
         for(int i = [itemsButtons count] - 1; i >= 0; --i)
         {
-            UITextView *button = itemsButtons[i];
+            MyAttributedButton *button = itemsButtons[i];
             [itemsButtons removeObject:button];
             [button removeFromSuperview];
         }
@@ -401,12 +401,9 @@
     for(int i = 0; i < [items count]; i++)
     {
         NSAttributedString *attrTitle = [(NSDictionary *)items[i] objectForKey:@"name"];
-        UITextView *itemButton = [[UITextView alloc] init];
-        itemButton.attributedText = attrTitle;
-        //[itemButton setAttributedTitle:attrTitle forState:UIControlStateNormal];
+        MyAttributedButton *itemButton = [[MyAttributedButton alloc] initWithFrame:CGRectMake(1, 1 + 61 * i, 60, 60) MyAttributedString:attrTitle];
         //[itemButton setTitle:@"测试" forState:UIControlStateNormal];
         [itemButton setBackgroundColor:[UIColor darkGrayColor]];
-        [itemButton setFrame:CGRectMake(1, 1 + 61 * i, 60, 60)];
 
         [self.itemsView addSubview:itemButton];
         [itemsButtons addObject:itemButton];

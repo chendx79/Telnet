@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1496834FC370501C36D659D7 /* libPods-XKXClient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AECEEC01F7982EB5DACE74A /* libPods-XKXClient.a */; };
+		656EAAA8219C127800EC6D08 /* MyAttributedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 656EAAA7219C127800EC6D08 /* MyAttributedButton.m */; };
 		65E356DA21901E7F004369FB /* libtelnet.c in Sources */ = {isa = PBXBuildFile; fileRef = 65E356D921901E7F004369FB /* libtelnet.c */; };
 		65E356E0219021DE004369FB /* UIColor+ANSI.m in Sources */ = {isa = PBXBuildFile; fileRef = 65E356DD219021DE004369FB /* UIColor+ANSI.m */; };
 		65E356E1219021DE004369FB /* AnsiEscapeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 65E356DE219021DE004369FB /* AnsiEscapeHelper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -26,6 +28,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1AECEEC01F7982EB5DACE74A /* libPods-XKXClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-XKXClient.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		656EAAA6219C127800EC6D08 /* MyAttributedButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyAttributedButton.h; path = MyAttributedButton/MyAttributedButton.h; sourceTree = "<group>"; };
+		656EAAA7219C127800EC6D08 /* MyAttributedButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MyAttributedButton.m; path = MyAttributedButton/MyAttributedButton.m; sourceTree = "<group>"; };
 		65E356D921901E7F004369FB /* libtelnet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = libtelnet.c; sourceTree = "<group>"; };
 		65E356DC219021DE004369FB /* AnsiEscapeHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnsiEscapeHelper.h; sourceTree = "<group>"; };
 		65E356DD219021DE004369FB /* UIColor+ANSI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+ANSI.m"; sourceTree = "<group>"; };
@@ -42,6 +47,8 @@
 		65E356EB2192C60F004369FB /* NSArray+PureLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+PureLayout.m"; sourceTree = "<group>"; };
 		65E356F2219401FC004369FB /* GameLogic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GameLogic.m; path = GameLogic/GameLogic.m; sourceTree = "<group>"; };
 		65E356F421940221004369FB /* GameLogic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GameLogic.h; path = GameLogic/GameLogic.h; sourceTree = "<group>"; };
+		72A9F7FBA308B9FBD4A1F70C /* Pods-XKXClient.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XKXClient.release.xcconfig"; path = "Pods/Target Support Files/Pods-XKXClient/Pods-XKXClient.release.xcconfig"; sourceTree = "<group>"; };
+		87A785C59315B0D855DF002E /* Pods-XKXClient.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XKXClient.debug.xcconfig"; path = "Pods/Target Support Files/Pods-XKXClient/Pods-XKXClient.debug.xcconfig"; sourceTree = "<group>"; };
 		9362F3BF1E14F67100842C29 /* XKXClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XKXClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9362F3C31E14F67100842C29 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9362F3C51E14F67100842C29 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -65,12 +72,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1496834FC370501C36D659D7 /* libPods-XKXClient.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		656EAAA5219C122000EC6D08 /* MyAttributedButton */ = {
+			isa = PBXGroup;
+			children = (
+				656EAAA6219C127800EC6D08 /* MyAttributedButton.h */,
+				656EAAA7219C127800EC6D08 /* MyAttributedButton.m */,
+			);
+			name = MyAttributedButton;
+			sourceTree = "<group>";
+		};
 		65E356DB219021D2004369FB /* AnsiEscapeHelper */ = {
 			isa = PBXGroup;
 			children = (
@@ -113,6 +130,8 @@
 				E753D2921E1B54F30096FBD7 /* README.md */,
 				9362F3C11E14F67100842C29 /* XKXClient */,
 				9362F3C01E14F67100842C29 /* Products */,
+				A030DEA29B539A99F937CCDD /* Pods */,
+				D517AD6E9A232604F199FCF6 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -127,6 +146,7 @@
 		9362F3C11E14F67100842C29 /* XKXClient */ = {
 			isa = PBXGroup;
 			children = (
+				656EAAA5219C122000EC6D08 /* MyAttributedButton */,
 				65E356F1219401BF004369FB /* Gamelogic */,
 				65E356E22192C60F004369FB /* PureLayout */,
 				65E356DB219021D2004369FB /* AnsiEscapeHelper */,
@@ -189,6 +209,23 @@
 			name = Model;
 			sourceTree = "<group>";
 		};
+		A030DEA29B539A99F937CCDD /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				87A785C59315B0D855DF002E /* Pods-XKXClient.debug.xcconfig */,
+				72A9F7FBA308B9FBD4A1F70C /* Pods-XKXClient.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		D517AD6E9A232604F199FCF6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1AECEEC01F7982EB5DACE74A /* libPods-XKXClient.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -196,6 +233,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9362F3D61E14F67100842C29 /* Build configuration list for PBXNativeTarget "XKXClient" */;
 			buildPhases = (
+				4DC1B5221D727AD013837E2F /* [CP] Check Pods Manifest.lock */,
 				9362F3BB1E14F67100842C29 /* Sources */,
 				9362F3BC1E14F67100842C29 /* Frameworks */,
 				9362F3BD1E14F67100842C29 /* Resources */,
@@ -255,6 +293,27 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		4DC1B5221D727AD013837E2F /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-XKXClient-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		9362F3BB1E14F67100842C29 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -273,6 +332,7 @@
 				65E356DA21901E7F004369FB /* libtelnet.c in Sources */,
 				65E356EE2192C610004369FB /* NSArray+PureLayout.m in Sources */,
 				65E356E0219021DE004369FB /* UIColor+ANSI.m in Sources */,
+				656EAAA8219C127800EC6D08 /* MyAttributedButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -404,6 +464,7 @@
 		};
 		9362F3D71E14F67100842C29 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 87A785C59315B0D855DF002E /* Pods-XKXClient.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = FQZ2R3UT9T;
@@ -421,6 +482,7 @@
 		};
 		9362F3D81E14F67100842C29 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 72A9F7FBA308B9FBD4A1F70C /* Pods-XKXClient.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = FQZ2R3UT9T;

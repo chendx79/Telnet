@@ -372,7 +372,12 @@
             
 			coveredLength += thisCoveredLength;
 			searchRange.location = NSMaxRange(thisEscapeSequenceRange);
-			searchRange.length = aStringLength-searchRange.location;
+            if (aStringLength >= searchRange.location) {
+                searchRange.length = aStringLength-searchRange.location;
+            } else {
+                break;
+            }
+
 		}
 	}
 	while(thisEscapeSequenceRange.location != NSNotFound);

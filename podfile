@@ -1,0 +1,4 @@
+target 'XKXClient' do
+platform :ios
+pod 'DTCoreText'
+end
