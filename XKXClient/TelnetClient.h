@@ -10,7 +10,7 @@
 
 @protocol TelnetDelegate <NSObject>
 
-- (void)didReceiveMessage:(NSString *)msg;
+- (bool)didReceiveMessage:(NSString *)msg;
 - (void)shouldEcho:(BOOL)echo;
 
 @end

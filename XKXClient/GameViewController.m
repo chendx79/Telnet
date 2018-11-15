@@ -326,18 +326,6 @@
     [[GameLogic shareInstance] sendMessage:direction];
 }
 
-#pragma mark - TelnetDelegate
-
-- (void)didReceiveMessage:(NSAttributedString *)msg
-{
-    [self appendText:msg];
-}
-
-- (void)shouldEcho:(BOOL)echo
-{
-    //NSLog(@"%s %d", __func__, echo);
-}
-
 #pragma mark - UITextFieldDelegate
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
     [[GameLogic shareInstance] sendMessage:_commandField.text];
@@ -390,6 +378,7 @@
 }
 
 - (void)changeItemsButtons:(NSArray *)items{
+
     if ([itemsButtons count] > 0) {
         for(int i = [itemsButtons count] - 1; i >= 0; --i)
         {
