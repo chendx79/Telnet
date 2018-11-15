@@ -58,8 +58,10 @@ static void _send(id client, const char *buffer, size_t size) {
 
     SEL sel = @selector(didReceiveMessage:);
     id telnetDelegate = sender.userInfo;
-    void (*myObjCSelectorPointer)(id, SEL, NSString *)  = (void (*)(id,SEL,NSString *))[telnetDelegate methodForSelector:sel];
-    myObjCSelectorPointer(telnetDelegate, sel, msg);
+    bool (*myObjCSelectorPointer)(id, SEL, NSString *)  = (bool (*)(id,SEL,NSString *))[telnetDelegate methodForSelector:sel];
+    if (! myObjCSelectorPointer(telnetDelegate, sel, msg)){
+        return;
+    }
 
     //如果成功处理完成，清空缓存
     [recBuf resetBytesInRange:NSMakeRange(0, recBuf.length)];
@@ -158,8 +160,9 @@ static void _event_handler(telnet_t *telnet, telnet_event_t *ev,
 
 - (void)writeMessage:(NSString *)msg
 {
-    const char *buffer = [msg UTF8String];
-    size_t size = [msg length];
+    NSStringEncoding gbkEncoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
+    const char *buffer = [msg cStringUsingEncoding:gbkEncoding];
+    size_t size = [msg lengthOfBytesUsingEncoding:gbkEncoding] + 1;
     static char crlf[] = { '\r', '\n' };
     int i;
     

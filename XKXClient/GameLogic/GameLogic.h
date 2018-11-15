@@ -23,6 +23,7 @@
 
 @interface GameLogic : NSObject<TelnetDelegate>
 
+@property (nonatomic, strong) NSMutableArray *itemsArray;
 @property (nonatomic, weak) id<GameLogicDelegate> delegate;
 
 +(instancetype) shareInstance;

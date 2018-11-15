@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		1496834FC370501C36D659D7 /* libPods-XKXClient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AECEEC01F7982EB5DACE74A /* libPods-XKXClient.a */; };
 		656EAAA8219C127800EC6D08 /* MyAttributedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 656EAAA7219C127800EC6D08 /* MyAttributedButton.m */; };
+		656EAAB2219D389700EC6D08 /* 方正卡通简体.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 656EAAAF219D386E00EC6D08 /* 方正卡通简体.ttf */; };
+		656EAAB3219D389700EC6D08 /* 方正康体简体.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 656EAAB1219D386E00EC6D08 /* 方正康体简体.ttf */; };
+		656EAAB4219D389700EC6D08 /* 华文行楷.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 656EAAB0219D386E00EC6D08 /* 华文行楷.ttf */; };
 		65E356DA21901E7F004369FB /* libtelnet.c in Sources */ = {isa = PBXBuildFile; fileRef = 65E356D921901E7F004369FB /* libtelnet.c */; };
 		65E356E0219021DE004369FB /* UIColor+ANSI.m in Sources */ = {isa = PBXBuildFile; fileRef = 65E356DD219021DE004369FB /* UIColor+ANSI.m */; };
 		65E356E1219021DE004369FB /* AnsiEscapeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 65E356DE219021DE004369FB /* AnsiEscapeHelper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -31,6 +34,9 @@
 		1AECEEC01F7982EB5DACE74A /* libPods-XKXClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-XKXClient.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		656EAAA6219C127800EC6D08 /* MyAttributedButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MyAttributedButton.h; path = MyAttributedButton/MyAttributedButton.h; sourceTree = "<group>"; };
 		656EAAA7219C127800EC6D08 /* MyAttributedButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MyAttributedButton.m; path = MyAttributedButton/MyAttributedButton.m; sourceTree = "<group>"; };
+		656EAAAF219D386E00EC6D08 /* 方正卡通简体.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "方正卡通简体.ttf"; path = "Fonts/方正卡通简体.ttf"; sourceTree = "<group>"; };
+		656EAAB0219D386E00EC6D08 /* 华文行楷.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "华文行楷.ttf"; path = "Fonts/华文行楷.ttf"; sourceTree = "<group>"; };
+		656EAAB1219D386E00EC6D08 /* 方正康体简体.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "方正康体简体.ttf"; path = "Fonts/方正康体简体.ttf"; sourceTree = "<group>"; };
 		65E356D921901E7F004369FB /* libtelnet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = libtelnet.c; sourceTree = "<group>"; };
 		65E356DC219021DE004369FB /* AnsiEscapeHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnsiEscapeHelper.h; sourceTree = "<group>"; };
 		65E356DD219021DE004369FB /* UIColor+ANSI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+ANSI.m"; sourceTree = "<group>"; };
@@ -86,6 +92,16 @@
 				656EAAA7219C127800EC6D08 /* MyAttributedButton.m */,
 			);
 			name = MyAttributedButton;
+			sourceTree = "<group>";
+		};
+		656EAAAA219D1FD400EC6D08 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				656EAAAF219D386E00EC6D08 /* 方正卡通简体.ttf */,
+				656EAAB1219D386E00EC6D08 /* 方正康体简体.ttf */,
+				656EAAB0219D386E00EC6D08 /* 华文行楷.ttf */,
+			);
+			name = Fonts;
 			sourceTree = "<group>";
 		};
 		65E356DB219021D2004369FB /* AnsiEscapeHelper */ = {
@@ -146,6 +162,7 @@
 		9362F3C11E14F67100842C29 /* XKXClient */ = {
 			isa = PBXGroup;
 			children = (
+				656EAAAA219D1FD400EC6D08 /* Fonts */,
 				656EAAA5219C122000EC6D08 /* MyAttributedButton */,
 				65E356F1219401BF004369FB /* Gamelogic */,
 				65E356E22192C60F004369FB /* PureLayout */,
@@ -285,6 +302,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				656EAAB2219D389700EC6D08 /* 方正卡通简体.ttf in Resources */,
+				656EAAB3219D389700EC6D08 /* 方正康体简体.ttf in Resources */,
+				656EAAB4219D389700EC6D08 /* 华文行楷.ttf in Resources */,
 				9362F3D21E14F67100842C29 /* LaunchScreen.storyboard in Resources */,
 				9362F3CF1E14F67100842C29 /* Assets.xcassets in Resources */,
 				9362F3CD1E14F67100842C29 /* Main.storyboard in Resources */,

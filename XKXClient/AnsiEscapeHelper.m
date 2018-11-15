@@ -83,6 +83,10 @@
 
     NSArray * attributesAndRanges = [self attributesForString:aString cleanString:aCleanString];
 
+    if (attributesAndRanges == nil) {
+        return nil;
+    }
+
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc]
                                                    initWithString:*aCleanString
                                                    attributes:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -375,7 +379,7 @@
             if (aStringLength >= searchRange.location) {
                 searchRange.length = aStringLength-searchRange.location;
             } else {
-                break;
+                return nil;
             }
 
 		}
@@ -444,7 +448,11 @@
 	NSString *cleanString;
     
 	NSArray *formatCodes = [self escapeCodesForString:aString cleanString:&cleanString];
-    
+
+    if (formatCodes == nil) {
+        return nil;
+    }
+
 	// go through all the found escape sequence codes and for each one, create
 	// the string formatting attribute name and value, find the next escape
 	// sequence that specifies the end of the formatting run started by

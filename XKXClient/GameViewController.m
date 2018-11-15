@@ -24,6 +24,7 @@
 @property (nonatomic, strong) DTAttributedTextView *messageTextView;
 @property (nonatomic, strong) UIView *directionView;
 @property (nonatomic, strong) UIView *itemsView;
+@property (nonatomic, strong) NSLayoutConstraint *textFieldViewHeightConstraint;
 
 @end
 
@@ -118,7 +119,7 @@
         }
 
         [self.textFieldView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:toolButtonView[2]];
-        [self.textFieldView autoSetDimension:ALDimensionHeight toSize:34.0];
+        self.textFieldViewHeightConstraint = [self.textFieldView autoSetDimension:ALDimensionHeight toSize:34.0];
         [self.textFieldView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
         [self.textFieldView autoPinEdgeToSuperviewEdge:ALEdgeRight];
 
@@ -212,6 +213,7 @@
 - (void)messageTextViewTap:(NSNotification *)notification
 {
     [_commandField resignFirstResponder];
+    self.textFieldViewHeightConstraint.constant = 34;
 }
 
 #pragma mark - UIKeyboardEvent
@@ -220,9 +222,8 @@
 {
     NSLog(@"%@", @"keyboardWillChangeSize");
 //    NSDictionary *info = notification.userInfo;
-//
 //    CGRect r = [info[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-//    [self.textFieldView autoSetDimension:ALDimensionHeight toSize:200.0];
+    self.textFieldViewHeightConstraint.constant = 135.0;
 }
 
 //组件初始化
