@@ -86,10 +86,10 @@
 
         [self.locationButton autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.mapToolView withOffset:5];
         [self.locationButton autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.mapToolView withOffset:5];
-        [self.locationButton autoSetDimensionsToSize:CGSizeMake(80, 30)];
+        [self.locationButton autoSetDimensionsToSize:CGSizeMake(100, 30)];
 
         [self.mapButton autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.mapToolView withOffset:5];
-        [self.mapButton autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.mapToolView withOffset:90];
+        [self.mapButton autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.mapToolView withOffset:105];
         [self.mapButton autoSetDimensionsToSize:CGSizeMake(50, 30)];
 
         [self.locationTextView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.mapToolView];
